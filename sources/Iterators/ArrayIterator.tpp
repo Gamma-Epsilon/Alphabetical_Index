@@ -5,23 +5,18 @@
 
 template <class T>
 ArrayIterator<T>::ArrayIterator(const DynamicArray<T>& source)
-    : data(source), index(0) {}
+    : data(source), nextIndex(0) {}
 
 template <class T>
 bool ArrayIterator<T>::HasNext() const {
-    return index < data.GetLength();
+    return nextIndex < data.GetLength();
 }
 
 template <class T>
-const T& ArrayIterator<T>::Current() const {
-    if(!HasNext()) throw IndexOutOfRange("ArrayIterator::Current - no element.");
-    return data[index];
-}
-
-template <class T>
-void ArrayIterator<T>::Next() {
+const T& ArrayIterator<T>::Next() {
     if(!HasNext()) throw IndexOutOfRange("ArrayIterator::Next - no next element.");
-    index++;
+    
+    return data[nextIndex++];
 }
 
 #endif /* ARRAY_ITERATOR_TPP */

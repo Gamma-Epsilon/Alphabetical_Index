@@ -5,23 +5,21 @@
 
 template <class T>
 ListIterator<T>::ListIterator(const LinkedList<T>& source)
-    : current(source.head.get()) {}
+    : nextNode(source.head.get()) {}
 
 template <class T>
 bool ListIterator<T>::HasNext() const {
-    return current != nullptr;
+    return nextNode != nullptr;
 }
 
 template <class T>
-const T& ListIterator<T>::Current() const {
-    if(!HasNext()) throw IndexOutOfRange("ListIterator::Current - no element.");
-    return current->value;
-}
-
-template <class T>
-void ListIterator<T>::Next() {
+const T& ListIterator<T>::Next() {
     if(!HasNext()) throw IndexOutOfRange("ListIterator::Next - no next element.");
-    current = current->next.get();
+    
+    const T& result = nextNode->value;
+    nextNode = nextNode->next.get(); 
+
+    return result;
 }
 
 #endif /* LIST_ITERATOR_TPP */

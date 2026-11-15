@@ -8,14 +8,13 @@ template <class T>
 class ArrayIterator : public Iterator<T> {
 private:
     const DynamicArray<T>& data;
-    int index; // Индекс текущего элемента
+    int nextIndex; // Индекс следующего элемента
 
 public:
     ArrayIterator(const DynamicArray<T>& source);
 
-    bool HasNext() const override;
-    const T& Current() const override;
-    void Next() override;
+    bool HasNext()  const override;
+    const T& Next() override;
 };
 
 #include "../../sources/Iterators/ArrayIterator.tpp"

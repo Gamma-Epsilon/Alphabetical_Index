@@ -7,14 +7,13 @@
 template <class T>
 class ListIterator : public Iterator<T> {
 private:
-    const typename LinkedList<T>::Node* current;
+    const typename LinkedList<T>::Node* nextNode;
 
 public:
     ListIterator(const LinkedList<T>& source);
 
-    bool HasNext() const override;
-    const T& Current() const override;
-    void Next() override;
+    bool HasNext()  const override;
+    const T& Next() override;
 };
 
 #include "../../sources/Iterators/ListIterator.tpp"
