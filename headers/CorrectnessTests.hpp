@@ -1,8 +1,6 @@
 #ifndef CORRECTNESS_TESTS_HPP
 #define CORRECTNESS_TESTS_HPP
 
-#include <cassert>
-#include <iostream>
 
 #include "../headers/Sequences/DynamicArray.hpp"
 #include "../headers/Sequences/LinkedList.hpp"

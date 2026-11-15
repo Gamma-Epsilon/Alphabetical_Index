@@ -1,9 +1,13 @@
 #include <utility>
+#include <cassert>
+#include <iostream>
 
 #include "../headers/CorrectnessTests.hpp"
 
+
+/* Базовые структуры */
 void DynamicArrayTest() {
-    DynamicArray<int> array = DynamicArray<int>();
+    DynamicArray<int> array;
 
     /* Пустой массив */
     assert(array.GetCapacity() == 0 && array.GetLength() == 0);
@@ -59,11 +63,61 @@ void DynamicArrayTest() {
     std::cout << "DynamicArrayTest: [OK]" << std::endl;
 }
 
+void LinkedListTest() {
+    LinkedList<int> list; 
+
+    /* Пустой список */
+    assert(list.GetLength() == 0);
+
+    /* Добавление элемента */
+    list.Append(42);
+    assert(list[0] == 42);
+
+    list.Prepend(67);
+    assert(list[0] == 67);
+    assert(list.GetLength() == 2);
+
+    list.InsertAt(111, 1);
+    assert(list[1] == 111);
+    
+    assert(list.GetFirst() == 67);
+    assert(list.GetLast()  == 42);
+
+    /* Удаление элемента */
+    list.RemoveAt(0);
+    assert(list.GetFirst()  == 111);
+    assert(list.GetLength() == 2);
+
+    /* Копирование и перемещение */
+    LinkedList<int> list_copied(list);
+    list_copied[1] = 404; 
+    assert(list[1] != list_copied[1]);
+
+    LinkedList<int> moved(std::move(list_copied));
+    assert(list_copied.GetLength() == 0 && moved.GetLength() == 2);
+
+    /* Некорректные индексы */
+    bool exception = false; 
+
+    try {
+        list[42];
+    } catch(const IndexOutOfRange&) {
+        exception = true;
+    }
+
+    assert(exception);
+
+    std::cout << "LinkedListTest: [OK]" << std::endl;
+}
+
+
+/* Итераторы на базовые структуры */
 
 
 
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
+    LinkedListTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     
