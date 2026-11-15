@@ -111,13 +111,95 @@ void LinkedListTest() {
 }
 
 
+/* Умные указатели */
+void UniquePtrTest() {
+
+} 
+
+void SharedPtrTest() {
+
+}
+
+
 /* Итераторы на базовые структуры */
+void ArrayIteratorTest() {
+    int many[5] = {1, 2, 3, 4, 5};
+    int one[1]    = {67};
+
+    DynamicArray<int> array_1(many, 5);
+    DynamicArray<int> array_2(one, 1);
+    DynamicArray<int> empty;
+
+    UniquePtr<Iterator<int>> iterator_1 = array_1.GetIterator();
+    ArrayIterator<int>       iterator_2(array_2);
+    auto iterator_3 = empty.GetIterator();
+
+    /* Пустой контейнер */
+    bool exception_1 = false; 
+
+    try {
+        iterator_3->Next();
+    } catch(const IndexOutOfRange&) {
+        exception_1 = true; 
+    }
+
+    assert(exception_1);
+
+    /* Один элемент */
+    assert(iterator_2.HasNext()); 
+    assert(iterator_2.Next() == 67);
+    
+    bool exception_2 = false;
+    try {
+        iterator_2.Next();
+    } catch(const IndexOutOfRange&) {
+        exception_2 = true;
+    }
+
+    assert(exception_2);
+
+    /* Несколько элементов */
+    bool exception_3 = false;
+    
+    try {
+        while(iterator_1->HasNext()) {
+            iterator_1->Next();
+        }
+    } catch(const IndexOutOfRange&) {
+        exception_3 = true;
+    }
+
+    assert(!exception_3);
+
+    /* Конец последовательности */
+    bool exception_4 = false; 
+
+    try {
+        iterator_1->Next();
+    } catch(const IndexOutOfRange&) {
+        exception_4 = true; 
+    }
+
+    assert(exception_4);
+
+    std::cout << "ArrayIteratorTest: [OK]" << std::endl;
+}
+
+void ListIteratorTest() {
+
+} 
 
 
-
+/* Запуск всех тестов */
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
     LinkedListTest();
+
+    ArrayIteratorTest(); 
+    ListIteratorTest();
+
+    UniquePtrTest(); 
+    SharedPtrTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     
