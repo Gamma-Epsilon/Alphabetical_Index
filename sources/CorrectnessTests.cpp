@@ -154,7 +154,87 @@ void UniquePtrTest() {
 } 
 
 void SharedPtrTest() {
+    /* Создание и доступ */
+    SharedPtr<int> ptr1(new int(67));
 
+    assert(*ptr1.get() == 67);
+    assert(ptr1.use_count() == 1);
+
+    /* Копирование и множественное владение */
+    SharedPtr<int> ptr2(ptr1);
+    SharedPtr<int> ptr3 = ptr1;
+
+    assert(ptr1.get() == ptr2.get());
+    assert(ptr2.get() == ptr3.get());
+
+    assert(ptr1.use_count() == 3);
+    assert(ptr2.use_count() == 3);
+    assert(ptr3.use_count() == 3);
+
+    /* Изменение общего объекта */
+    *ptr2 = 42;
+
+    assert(*ptr1 == 42);
+    assert(*ptr3 == 42);
+
+    /* Перемещение */
+    SharedPtr<int> moved(std::move(ptr3));
+
+    assert(*moved.get() == 42);
+    assert(ptr3.get() == nullptr);
+    assert(ptr3.use_count() == 0);
+    assert(moved.use_count() == 3);
+
+    /* Reset и уменьшение ref_count */
+    ptr2.reset();
+
+    assert(ptr2.get() == nullptr);
+    assert(ptr2.use_count() == 0);
+    assert(ptr1.use_count() == 2);
+    assert(moved.use_count() == 2);
+
+    /* Reset с новым объектом */
+    SharedPtr<int> ptr4(new int(111));
+    ptr4.reset(new int(67));
+
+    assert(*ptr4.get() == 67);
+    assert(ptr4.use_count() == 1);
+
+    /* Swap */
+    SharedPtr<int> ptr5(new int(111));
+    SharedPtr<int> ptr6(new int(222));
+
+    ptr5.swap(ptr6);
+
+    assert(*ptr5.get() == 222);
+    assert(*ptr6.get() == 111);
+
+    assert(ptr5.use_count() == 1);
+    assert(ptr6.use_count() == 1);
+
+    /* SharedPtr<int[]> */
+    SharedPtr<int[]> ptr7(new int[3]{67, 42, 666});
+
+    assert(ptr7[0] == 67 && ptr7[1] == 42 && ptr7[2] == 666);
+    assert(ptr7.use_count() == 1);
+
+    /* Множественное владение массивом */
+    SharedPtr<int[]> ptr8(ptr7);
+
+    assert(ptr7.get() == ptr8.get());
+    assert(ptr7.use_count() == 2);
+    assert(ptr8.use_count() == 2);
+
+    ptr8[0] = 100;
+
+    assert(ptr7[0] == 100);
+
+    ptr8.reset();
+
+    assert(ptr7.use_count() == 1);
+    assert(ptr8.use_count() == 0);
+
+    std::cout << "SharedPtrTest: [OK]" << std::endl;
 }
 
 
