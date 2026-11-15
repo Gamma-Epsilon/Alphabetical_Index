@@ -113,7 +113,44 @@ void LinkedListTest() {
 
 /* Умные указатели */
 void UniquePtrTest() {
+    /* Создание и досту */ 
+    UniquePtr<int> ptr1(new int(67));
 
+    assert(*ptr1.get() == 67);
+
+    /* Перемещение */
+    UniquePtr<int> moved(std::move(ptr1));
+
+    assert(*moved.get() == 67);
+    assert(ptr1.get() == nullptr); 
+
+    /* Reset */
+    UniquePtr<int> ptr2(new int(42));
+    ptr2.reset(new int(67));
+
+    assert(*ptr2.get() == 67);
+
+    /* Release */
+    UniquePtr<int> ptr3(new int(42));
+    int* released_ptr = ptr3.release();
+
+    assert(ptr3.get() == nullptr);
+    assert(*released_ptr == 42);
+
+    /* Swap */
+    UniquePtr<int> ptr4(new int(111));
+    UniquePtr<int> ptr5(new int(222));
+    ptr4.swap(ptr5); 
+
+    assert(*ptr4.get() == 222);
+    assert(*ptr5.get() == 111);
+
+    /* UniquePtr<int[]> */
+    UniquePtr<int[]> ptr6(new int[3]{67, 42, 666});
+
+    assert(ptr6[0] == 67 && ptr6[1] == 42 && ptr6[2] == 666);
+
+    std::cout << "UniquePtrTest: [OK]" << std::endl;
 } 
 
 void SharedPtrTest() {
