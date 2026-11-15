@@ -4,7 +4,7 @@
 #include "../../headers/Sequences/LinkedList.hpp"
 #include "../../headers/Iterators/ListIterator.hpp"
 #include "../../headers/Exceptions.hpp"
-#include <limits>
+
 #include <utility>
 
 /* СОЗДАНИЕ */
@@ -43,7 +43,10 @@ LinkedList<T>::LinkedList(LinkedList<T>&& other) noexcept
 template <class T>
 LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>&& other) noexcept {
     if(this != &other) {
-        Clear();
+        while(head){
+            UniquePtr<Node> next = std::move(head->next);
+            head = std::move(next);
+        }
         head = std::move(other.head);
         tail = other.tail;
         length = other.length;
@@ -69,11 +72,6 @@ LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& other){
 /* УДАЛЕНИЕ */
 template <class T>
 LinkedList<T>::~LinkedList(){
-    Clear();
-}
-
-template <class T>
-void LinkedList<T>::Clear() noexcept {
     while(head){
         UniquePtr<Node> next = std::move(head->next);
         head = std::move(next);
@@ -95,7 +93,7 @@ T& LinkedList<T>::operator[](const int index){
 template <class T>
 const T& LinkedList<T>::operator[](const int index) const{
     if(index < 0 || index >= length) throw IndexOutOfRange("LinkedList::operator[] - index out of range.");
-    Node* current = head.get(); 
+    const Node* current = head.get(); 
     for(int i = 0; i < index; i++) current = current->next.get();
     return current->value;
 }
@@ -127,29 +125,35 @@ int LinkedList<T>::GetLength() const{
 
 /* Добавление/удаление */
 template <class T>
-void LinkedList<T>::InsertAt(const T& item, const int index) {
+void LinkedList<T>::InsertAt(const T& item, int index) {
     if (index < 0 || index > length) throw IndexOutOfRange("LinkedList::InsertAt - Invalid index.");
-    if (index == length) {
-        Append(item);
-        return;
-    }
-    if (length == (std::numeric_limits<int>::max)())
-        throw std::length_error("LinkedList::InsertAt - maximum size reached.");
 
     UniquePtr<Node> newNode(new Node(item));
+    Node* inserted = newNode.get();
 
+    // Вставка в начало
     if (index == 0) {
         newNode->next = std::move(head);
         head = std::move(newNode);
+
+        if (length == 0)
+            tail = inserted;
     }
+
+    // Вставка в конец
+    else if (index == length) {
+        tail->next = std::move(newNode);
+        tail = inserted;
+    }
+
+    // Вставка в середину
     else {
         Node* previous = head.get();
 
         for (int i = 0; i < index - 1; ++i)
             previous = previous->next.get();
 
-        newNode->next = std::move(previous->next);
-
+        newNode->next  = std::move(previous->next);
         previous->next = std::move(newNode);
     }
 
@@ -157,19 +161,12 @@ void LinkedList<T>::InsertAt(const T& item, const int index) {
 }
 
 template <class T>
-void LinkedList<T>::Append(const T& item){
-    if (length == (std::numeric_limits<int>::max)())
-        throw std::length_error("LinkedList::Append - maximum size reached.");
-    UniquePtr<Node> newNode(new Node(item));
-    Node* inserted = newNode.get();
-    if (tail) tail->next = std::move(newNode);
-    else head = std::move(newNode);
-    tail = inserted;
-    ++length;
+void LinkedList<T>::Append(const T& item) {
+    InsertAt(item, length);
 }
 
 template <class T>
-void LinkedList<T>::Prepend(const T& item){
+void LinkedList<T>::Prepend(const T& item) {
     InsertAt(item, 0);
 }
 

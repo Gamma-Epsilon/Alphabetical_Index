@@ -44,11 +44,10 @@ public:
     
     /* Операции */
     int GetCapacity() const;
-    int GetLength() const override;
-    int GetSize() const; // Совместимость с существующим кодом
+    int GetLength()   const override;
     
     const T& GetFirst() const override;
-    const T& GetLast() const override;
+    const T& GetLast()  const override;
     
     void Resize(const int newSize);      // Изменить кол-во элементов
     void Reserve(const int newCapacity); // Изменить общий размер

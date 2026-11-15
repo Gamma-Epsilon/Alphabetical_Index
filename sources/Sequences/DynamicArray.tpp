@@ -5,9 +5,6 @@
 #include "../../headers/Iterators/ArrayIterator.hpp"
 #include "../../headers/Exceptions.hpp"
 
-#include <limits>
-#include <utility>
-
 
 /* СОЗДАНИЕ ОБЪЕКТА */
 template <class T>
@@ -58,6 +55,7 @@ DynamicArray<T>& DynamicArray<T>::operator=(DynamicArray<T>&& other) noexcept {
         other.size = 0;
         other.capacity = 0;
     }
+
     return *this;
 }
 
@@ -97,11 +95,6 @@ UniquePtr<Iterator<T>> DynamicArray<T>::GetIterator() const {
 
 /* ОПЕРАЦИИ */
 template <class T>
-int DynamicArray<T>::GetSize() const {
-    return GetLength();
-}
-
-template <class T>
 int DynamicArray<T>::GetLength() const { return size; }
 
 template <class T>
@@ -125,11 +118,11 @@ void DynamicArray<T>::Resize(const int newSize) {
     }
 
     for(int i = newSize; i < size; i++){
-        data[i] = T{};
+        data[i] = T{}; // !!
     }
 
     for(int i = size; i < newSize; i++){
-        data[i] = T{};
+        data[i] = T{}; // !!
     }
 
     size = newSize;
@@ -149,7 +142,7 @@ void DynamicArray<T>::Reserve(const int newCapacity) {
     }
 
     data     = std::move(newData); 
-    capacity = newCapacity;
+    capacity = newCapacity;  // !!
 }
 /* Reserve меняет capacity, сохраняя size */
 
@@ -165,26 +158,20 @@ void DynamicArray<T>::Prepend(const T& item) {
     InsertAt(item, 0);
 }
 
-template <class T> 
+template <class T>
 void DynamicArray<T>::InsertAt(const T& item, int index) {
-    if(index < 0 || index > size) throw IndexOutOfRange("DynamicArray::InsertAt - invalid index.");
+    if (index < 0 || index > size) throw IndexOutOfRange("Invalid index.");
 
-    if(size == (std::numeric_limits<int>::max)())
-        throw std::length_error("DynamicArray::InsertAt - maximum size reached.");
+    T saved = item;
 
-    // item может ссылаться на data: сохраняем его до сдвига и перевыделения
-    T saved(item);
-    if(size == capacity) {
-        const int limit = (std::numeric_limits<int>::max)();
-        Reserve(capacity == 0 ? 1 : (capacity > limit / 2 ? limit : capacity * 2));
-    }
+    if (size == capacity)
+        Reserve(capacity == 0 ? 1 : capacity * 2);
 
-    for(int i = size; i > index; i--){
+    for (int i = size; i > index; --i)
         data[i] = std::move(data[i - 1]);
-    }
 
     data[index] = std::move(saved);
-    size++;
+    ++size;
 }
 
 template <class T> 

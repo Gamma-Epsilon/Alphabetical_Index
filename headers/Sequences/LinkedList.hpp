@@ -19,9 +19,10 @@ private:
     };
 
     UniquePtr<Node> head;
-    Node* tail;
+    Node* tail;  // Невладеющий указатель. Можно обращаться, но не отвечает за освобождение памяти
     int   length;
-    void Clear() noexcept;
+    
+/* head владеет первым узлом, а tail лишь указывает */
 
 public: 
     /* Создание объекта */

@@ -1,6 +1,7 @@
-// The test implementation is compiled as a separate translation unit
-int RunCorrectnessTests();
+#include <iostream>
+
+#include "headers/CorrectnessTests.hpp"
 
 int main() {
-    return RunCorrectnessTests();
+    return RunAllCorrectnessTests();
 }

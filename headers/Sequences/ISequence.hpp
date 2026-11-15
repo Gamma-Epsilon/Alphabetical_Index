@@ -1,5 +1,5 @@
-﻿#ifndef SEQUENCE_HPP
-#define SEQUENCE_HPP
+﻿#ifndef ISEQUENCE_HPP
+#define ISEQUENCE_HPP
 
 #include "../Exceptions.hpp"
 #include "../Iterators/Iterator.hpp"
@@ -31,4 +31,4 @@ public:
 };
 
 
-#endif /* SEQUENCE_HPP */
+#endif /* ISEQUENCE_HPP */

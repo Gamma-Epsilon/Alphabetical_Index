@@ -3,6 +3,8 @@
 
 #include "../Exceptions.hpp"
 
+/* Для обхода структур в едином интерфейсе */
+
 template <class T>
 class Iterator {
 public:
