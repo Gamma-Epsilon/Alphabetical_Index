@@ -441,6 +441,46 @@ void SortedSequenceTest() {
 
     assert(sorted_array[0] == 1 && sorted_array[1] == 2 && sorted_array[2] == 3);
 
+
+    /* Проверка с KeyValue */
+    using Entry = KeyValue<std::string, DynamicArray<int>>;
+    SortedSequence<Entry> sortedWords;
+
+    Entry first; 
+    first.key = "science";
+    first.value.Append(1);
+    first.value.Append(3);
+
+    Entry second; 
+    second.key = "algorithm";
+    second.value.Append(1);
+    second.value.Append(67);
+
+    Entry third; 
+    third.key = "planet";
+    third.value.Append(1);
+    third.value.Append(42);
+
+    /* Добавление элементов */
+    sortedWords.Add(first); 
+    sortedWords.Add(second); 
+    sortedWords.Add(third);
+
+    assert(sortedWords[0].key == "algorithm" && sortedWords[1].key == "planet" && sortedWords[2].key == "science");
+    assert(sortedWords[0].value[0] == 1);
+
+    /* Поиск элементов */
+    Entry target1; 
+    Entry target2;
+    target1.key = "planet"; 
+    target2.key = "borik";
+
+    int indx5 = sortedWords.Index(target1);
+    int indx6 = sortedWords.Index(target2); 
+
+    assert(indx5 == 1);
+    assert(indx6 == -1);
+
     std::cout << "SortedSequenceTest: [OK]" << std::endl;
 }
 
