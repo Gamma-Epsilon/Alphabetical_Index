@@ -63,6 +63,6 @@ public:
     
 };
 
-#include "../../sources/Sequences/LinkedList.tpp"
+#include "../../sources/BaseSequences/LinkedList.tpp"
 
 #endif /* LINKED_LIST_HPP */

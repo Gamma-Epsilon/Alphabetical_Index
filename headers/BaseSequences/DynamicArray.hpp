@@ -59,6 +59,6 @@ public:
 
 };
 
-#include "../../sources/Sequences/DynamicArray.tpp"
+#include "../../sources/BaseSequences/DynamicArray.tpp"
 
 #endif /* DYNAMIC_ARRAY_HPP */

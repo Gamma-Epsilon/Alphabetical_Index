@@ -2,8 +2,8 @@
 #define CORRECTNESS_TESTS_HPP
 
 
-#include "Sequences/DynamicArray.hpp"
-#include "Sequences/LinkedList.hpp"
+#include "BaseSequences/DynamicArray.hpp"
+#include "BaseSequences/LinkedList.hpp"
 
 #include "Iterators/ArrayIterator.hpp"
 #include "Iterators/ListIterator.hpp"
@@ -12,6 +12,8 @@
 #include "Pointers/SharedPtr.hpp"
 
 #include "KeyValue.hpp"
+
+#include "ComplexSequences/SortedSequence.hpp"
 
 /* Базовые структуры  */
 void DynamicArrayTest(); 
@@ -27,6 +29,9 @@ void ListIteratorTest();
 
 /* Структура ключ-значение */
 void KeyValueTest();
+
+/* Отсортированный массив */
+void SortedSequenceTest();
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();

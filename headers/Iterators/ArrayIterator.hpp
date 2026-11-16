@@ -2,7 +2,7 @@
 #define ARRAY_ITERATOR_HPP
 
 #include "Iterator.hpp"
-#include "../Sequences/DynamicArray.hpp"
+#include "../BaseSequences/DynamicArray.hpp"
 
 template <class T>
 class ArrayIterator : public Iterator<T> {

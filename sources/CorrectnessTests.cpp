@@ -397,6 +397,53 @@ void KeyValueTest() {
     std::cout << "KeyValueTest: [OK]" << std::endl;
 }
 
+  
+/* Отсортированный массив */
+void SortedSequenceTest() {
+    SortedSequence<int> sorted;
+
+    /* Добавление элементов */
+    sorted.Add(5); 
+    sorted.Add(2); 
+    sorted.Add(8);
+    sorted.Add(1);
+    sorted.Add(4);
+
+    assert(sorted[0] == 1 && sorted[1] == 2 && sorted[2] == 4 && sorted[3] == 5 && sorted[4] == 8);
+
+    /* Поиск элементов */
+    int indx1 = sorted.Index(1);
+    int indx2 = sorted.Index(4);
+    int indx3 = sorted.Index(8);
+
+    assert(indx1 == 0 && indx2 == 2 && indx3 == 4);
+
+    int indx4 = sorted.Index(7); 
+    
+    assert(indx4 == -1);
+
+    /* Копирование */
+    SortedSequence<int> copied(sorted);
+
+    copied.Add(0);
+
+    assert(copied[0] == 0 && sorted[0] == 1);
+
+    /* Перемещение */
+    SortedSequence<int> moved(std::move(sorted));
+
+    assert(sorted.GetLength() == 0 && moved.GetLength() == 5);
+
+    /* Последовательность из неотсортированного массива */
+    int arr[5] = {3, 2, 1};
+    DynamicArray<int>   array(arr, 3);
+    SortedSequence<int> sorted_array(array);
+
+    assert(sorted_array[0] == 1 && sorted_array[1] == 2 && sorted_array[2] == 3);
+
+    std::cout << "SortedSequenceTest: [OK]" << std::endl;
+}
+
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
@@ -410,6 +457,8 @@ int RunAllCorrectnessTests() {
     SharedPtrTest();
 
     KeyValueTest();
+
+    SortedSequenceTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     

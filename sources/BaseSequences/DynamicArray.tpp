@@ -1,9 +1,8 @@
 ﻿#ifndef DYNAMIC_ARRAY_TPP
 #define DYNAMIC_ARRAY_TPP
 
-#include "../../headers/Sequences/DynamicArray.hpp"
+#include "../../headers/BaseSequences/DynamicArray.hpp"
 #include "../../headers/Iterators/ArrayIterator.hpp"
-#include "../../headers/Exceptions.hpp"
 
 
 /* СОЗДАНИЕ ОБЪЕКТА */

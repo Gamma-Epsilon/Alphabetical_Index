@@ -1,12 +1,12 @@
 ﻿#ifndef ISEQUENCE_HPP
 #define ISEQUENCE_HPP
 
-#include "../Exceptions.hpp"
 #include "../Iterators/Iterator.hpp"
 #include "../Pointers/UniquePtr.hpp"
+#include "../Exceptions.hpp"
 
 template <class T>
-class ISequence{
+class ISequence {
 public: 
     /* Удаление объекта */
     virtual ~ISequence() = default; 

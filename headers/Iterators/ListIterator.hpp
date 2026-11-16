@@ -2,7 +2,7 @@
 #define LIST_ITERATOR_HPP
 
 #include "Iterator.hpp"
-#include "../Sequences/LinkedList.hpp"
+#include "../BaseSequences/LinkedList.hpp"
 
 template <class T>
 class ListIterator : public Iterator<T> {

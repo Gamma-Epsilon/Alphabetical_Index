@@ -1,9 +1,8 @@
 ﻿#ifndef LINKED_LIST_TPP
 #define LINKED_LIST_TPP
 
-#include "../../headers/Sequences/LinkedList.hpp"
+#include "../../headers/BaseSequences/LinkedList.hpp"
 #include "../../headers/Iterators/ListIterator.hpp"
-#include "../../headers/Exceptions.hpp"
 
 #include <utility>
 
