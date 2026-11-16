@@ -14,6 +14,7 @@ template <class T>
 DynamicArray<T>::DynamicArray(const T* items, const int size) : size(size), capacity(size) {
     if(size < 0) throw IndexOutOfRange("DynamicArray::DynamicArray - negative count.");
     if(size > 0 && items == nullptr) throw std::invalid_argument("DynamicArray - null items.");
+    
     data = UniquePtr<T[]>(new T[capacity]{});
     for(int i = 0; i < size; i++){
         data[i] = items[i];

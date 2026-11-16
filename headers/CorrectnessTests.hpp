@@ -2,14 +2,16 @@
 #define CORRECTNESS_TESTS_HPP
 
 
-#include "../headers/Sequences/DynamicArray.hpp"
-#include "../headers/Sequences/LinkedList.hpp"
+#include "Sequences/DynamicArray.hpp"
+#include "Sequences/LinkedList.hpp"
 
-#include "../headers/Iterators/ArrayIterator.hpp"
-#include "../headers/Iterators/ListIterator.hpp"
+#include "Iterators/ArrayIterator.hpp"
+#include "Iterators/ListIterator.hpp"
 
-#include "../headers/Pointers/UniquePtr.hpp"
-#include "../headers/Pointers/SharedPtr.hpp"
+#include "Pointers/UniquePtr.hpp"
+#include "Pointers/SharedPtr.hpp"
+
+#include "KeyValue.hpp"
 
 /* Базовые структуры  */
 void DynamicArrayTest(); 
@@ -22,6 +24,9 @@ void SharedPtrTest();
 /* Итераторы на базовые структуры */
 void ArrayIteratorTest(); 
 void ListIteratorTest(); 
+
+/* Структура ключ-значение */
+void KeyValueTest();
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();

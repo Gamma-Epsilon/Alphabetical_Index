@@ -4,7 +4,7 @@
 #include <cstddef>
 
 /* UniquePtr для одиночного объекта */
-template <typename T>
+template <class T>
 class UniquePtr {
 private:
     T* ptr;
@@ -34,7 +34,7 @@ public:
 };
 
 /* UniquePtr для динамического массива */
-template <typename T>
+template <class T>
 class UniquePtr<T[]> {
 private:
     T* ptr;
@@ -65,4 +65,4 @@ public:
 
 #include "../../sources/Pointers/UniquePtr.tpp"
 
-#endif /* UNIQUE_PTR_HPP */
+#endif /* UNIQUE_PTR_HPP */ 

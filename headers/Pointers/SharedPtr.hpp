@@ -4,7 +4,7 @@
 #include <cstddef>
 
 /* SharedPtr для одиночного объекта */
-template <typename T>
+template <class T>
 class SharedPtr {
 private:
     T* ptr;
@@ -37,7 +37,7 @@ public:
 };
 
 /* SharedPtr для динамического массива */
-template <typename T>
+template <class T>
 class SharedPtr<T[]> {
 private:
     T* ptr;

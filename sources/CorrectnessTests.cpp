@@ -136,6 +136,7 @@ void UniquePtrTest() {
 
     assert(ptr3.get() == nullptr);
     assert(*released_ptr == 42);
+    delete released_ptr;
 
     /* Swap */
     UniquePtr<int> ptr4(new int(111));
@@ -366,6 +367,37 @@ void ListIteratorTest() {
 } 
 
 
+/* Структура ключ-значение */
+void KeyValueTest() {
+    KeyValue<std::string, DynamicArray<int>> entry;
+
+    /* Заполнение полей */
+    entry.key   = "planet"; 
+    entry.value.Append(42);
+    entry.value.Append(67);
+
+    assert(entry.value.GetLength() == 2 && entry.value.GetCapacity() == 2);
+
+    /* Проверка ключа */
+    assert(entry.key == "planet");
+
+    /* Проверка копирования */
+    auto copy = entry;
+
+    assert(copy.key == "planet");
+    assert(copy.value[0] == 42);
+    assert(copy.value[1] == 67);
+
+    /* Проверка независимости копий */
+    copy.value[0] = 111;
+
+    assert(entry.value[0] == 42);
+    assert(copy.value[0]  == 111);
+
+    std::cout << "KeyValueTest: [OK]" << std::endl;
+}
+
+
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
@@ -376,6 +408,8 @@ int RunAllCorrectnessTests() {
 
     UniquePtrTest(); 
     SharedPtrTest();
+
+    KeyValueTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     
