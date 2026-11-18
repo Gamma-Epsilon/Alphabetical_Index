@@ -20,24 +20,20 @@ public:
     DynamicArray(const T* items, const int size);           
     explicit DynamicArray(const int size);          
 
-    /* Конструктор копирования */
+    /* Копирование */
     DynamicArray(const DynamicArray<T>& dynamicArray); 
+    DynamicArray<T>& operator=(const DynamicArray<T>& other);
 
-    /* Конструктор перемещения */
+    /* Перемещение */
     DynamicArray(DynamicArray<T>&& other) noexcept;
-    
+    DynamicArray<T>& operator=(DynamicArray<T>&& other) noexcept;    
+
     /* Удаление объекта */
     ~DynamicArray() override = default;
 
     /* Перегрузка */
     T& operator[](const int index) override;
     const T& operator[](const int index) const override;
-    
-    /* Копирующее присваивание */
-    DynamicArray<T>& operator=(const DynamicArray<T>& other);
-
-    /* Перемещающее присваивание */
-    DynamicArray<T>& operator=(DynamicArray<T>&& other) noexcept;
     
     /* Итераторы */
     UniquePtr<Iterator<T>> GetIterator() const override;

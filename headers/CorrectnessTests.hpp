@@ -15,6 +15,8 @@
 
 #include "ComplexSequences/SortedSequence.hpp"
 
+#include "Dictionary/HashDictionary.hpp"
+
 /* Базовые структуры  */
 void DynamicArrayTest(); 
 void LinkedListTest(); 
@@ -32,6 +34,9 @@ void KeyValueTest();
 
 /* Отсортированный массив */
 void SortedSequenceTest();
+
+/* Hash-словарь */
+void HashDictionaryTest();
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();

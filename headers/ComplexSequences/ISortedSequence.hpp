@@ -1,7 +1,6 @@
 #ifndef ISORTED_SEQUENCE_HPP
 #define ISORTED_SEQUENCE_HPP
 
-#include "../Exceptions.hpp"
 
 template <class T> 
 class ISortedSequence {

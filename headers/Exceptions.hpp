@@ -17,4 +17,33 @@ public:
     }
 };
 
+
+class KeyDoesNotExist : public std::exception {
+private:
+    std::string message;
+public:
+    /* Конструкторы */
+    KeyDoesNotExist() : message("The key is not in a dictionary") {}
+    explicit KeyDoesNotExist(const std::string& msg) : message(msg) {} 
+    
+    const char* what() const noexcept override {
+        return message.c_str(); // Возвращение текстового сообщения об ошибке
+    }
+};
+
+
+class KeyAlreadyExists : public std::exception {
+private:
+    std::string message;
+public:
+    /* Конструкторы */
+    KeyAlreadyExists() : message("The key already is in a dictionary") {}
+    explicit KeyAlreadyExists(const std::string& msg) : message(msg) {} 
+    
+    const char* what() const noexcept override {
+        return message.c_str(); // Возвращение текстового сообщения об ошибке
+    }
+};
+
+
 #endif /* EXCEPTIONS_H */

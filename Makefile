@@ -1,4 +1,4 @@
-CXX = g++
+CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2
 TARGET   = build/correctness_tests.exe
 SOURCES  = main.cpp sources/CorrectnessTests.cpp

@@ -16,20 +16,16 @@ public:
     SortedSequence();
     SortedSequence(const DynamicArray<T>& items);            
 
-    /* Конструктор копирования */
-    SortedSequence(const SortedSequence<T>& sortedSequence) = default; 
-
-    /* Конструктор перемещения */
-    SortedSequence(SortedSequence<T>&& other) noexcept = default;
-
-    /* Копирующее присваивание */
+    /* Копирование */
+    SortedSequence(const SortedSequence<T>& sortedSequence)      = default; 
     SortedSequence<T>& operator=(const SortedSequence<T>& other) = default;
 
-    /* Перемещающее присваивание */
+    /* Перемещение */
+    SortedSequence(SortedSequence<T>&& other)               noexcept = default;
     SortedSequence<T>& operator=(SortedSequence<T>&& other) noexcept = default;
 
     /* Удаление объекта */
-    ~SortedSequence() override = default; 
+    ~SortedSequence() = default; 
 
     /* Доступ к существующим элементам */
     const T& operator[](int index) const override;

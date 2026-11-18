@@ -369,7 +369,8 @@ void ListIteratorTest() {
 
 /* Структура ключ-значение */
 void KeyValueTest() {
-    KeyValue<std::string, DynamicArray<int>> entry;
+    using Entry = KeyValue<std::string, DynamicArray<int>>;
+    Entry entry;
 
     /* Заполнение полей */
     entry.key   = "planet"; 
@@ -393,6 +394,19 @@ void KeyValueTest() {
 
     assert(entry.value[0] == 42);
     assert(copy.value[0]  == 111);
+
+    /* Проверка сравнений */
+    Entry target1; 
+    Entry target2; 
+
+    target1.key = "a"; 
+    target2.key = "b"; 
+
+    target1.value.Append(222);
+    target2.value.Append(111); 
+
+    assert(target1 < target2);
+    assert(!(target1 == target2));
 
     std::cout << "KeyValueTest: [OK]" << std::endl;
 }
@@ -485,6 +499,102 @@ void SortedSequenceTest() {
 }
 
 
+/* Hash-словарь */
+void HashDictionaryTest() {
+    using Dict = HashDictionary<std::string, int>;
+
+    Dict dictionary(1); // bucket = 1 для проверки коллизии 
+
+    /* Пустой словарь */
+    assert(dictionary.GetCount() == 0);
+    assert(!dictionary.ContainsKey("GTA VI"));
+
+    /* Некорректный bucketIndex */
+    bool invalidIndex = false; 
+
+    try {
+        Dict invalid(0);
+    } catch(const IndexOutOfRange&) {
+        invalidIndex = true;
+    }
+
+    assert(invalidIndex);
+
+    /* Добавление элементов */
+    dictionary.Add("planet", 10);
+    dictionary.Add("science", 20);
+    dictionary.Add("algorithm", 30);
+
+    assert(dictionary.GetCount() == 3);
+
+    assert(dictionary.ContainsKey("planet"));
+    assert(dictionary.ContainsKey("science"));
+    assert(dictionary.ContainsKey("algorithm"));
+    assert(!dictionary.ContainsKey("GTA VI"));
+
+    /* Получение значений */
+    assert(dictionary.Get("planet") == 10);
+    assert(dictionary.Get("science") == 20);
+    assert(dictionary.Get("algorithm") == 30);
+
+    /* Изменение через Get() */
+    dictionary.Get("planet") = 42;
+
+    assert(dictionary.Get("planet") == 42);
+    assert(dictionary.GetCount() == 3);
+
+    /* Константная перегрузка Get() */
+    const Dict& constDictionary = dictionary; 
+
+    assert(constDictionary.Get("science") == 20);
+
+    /* Повторное добавление ключа */
+    bool duplicateKey = false; 
+
+    try {
+        dictionary.Add("planet", 67);
+    } catch(const KeyAlreadyExists&) {
+        duplicateKey = true;
+    }
+
+    assert(duplicateKey);
+
+    /* Удаление элемента */
+    dictionary.Remove("science");
+
+    assert(dictionary.GetCount() == 2);
+    assert(!dictionary.ContainsKey("science"));
+
+    /* Получение отсутствующего ключа */
+    bool missing = false; 
+
+    try {
+        dictionary.Get("science");
+    } catch(const KeyDoesNotExist&) {
+        missing = true;
+    }
+
+    assert(missing);
+
+    /* Копирование */
+    Dict copied(dictionary);
+
+    assert(copied.GetCount() == 2 && dictionary.GetCount() == 2);
+    
+    copied.Get("planet") = 111; 
+
+    assert(copied.Get("planet") == 111 && dictionary.Get("planet") == 42);
+
+    /* Перемещение */
+    Dict moved(std::move(dictionary));
+
+    assert(moved.GetCount() ==  2 && dictionary.GetCount() == 0);
+
+    std::cout << "HashDictionaryTest: [OK]" << std::endl;
+}
+
+
+
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
@@ -499,6 +609,8 @@ int RunAllCorrectnessTests() {
     KeyValueTest();
 
     SortedSequenceTest();
+
+    HashDictionaryTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     

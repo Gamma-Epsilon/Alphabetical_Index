@@ -29,24 +29,20 @@ public:
     LinkedList(const T* items, const int count);       
     LinkedList();                 
 
-    /* Конструктор копирования */
+    /* Копирование */
     LinkedList(const LinkedList<T>& list); 
+    LinkedList<T>& operator=(const LinkedList<T>& other);
 
-    /* Конструктор перемещения */
+    /* Перемещение */
     LinkedList(LinkedList<T>&& other) noexcept;
-    
+    LinkedList<T>& operator=(LinkedList<T>&& other) noexcept;    
+
     /* Удаление объекта */
     ~LinkedList() override;
 
     /* Перегрузка [] */
     T& operator[](const int index) override;
     const T& operator[](const int index) const override;
-
-    /* Копирующее присваивание */
-    LinkedList<T>& operator=(const LinkedList<T>& other);
-
-    /* Перемещающее присваивание */
-    LinkedList<T>& operator=(LinkedList<T>&& other) noexcept;
 
     /* Итераторы */
     UniquePtr<Iterator<T>> GetIterator() const override;

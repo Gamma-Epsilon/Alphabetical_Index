@@ -51,7 +51,7 @@ DynamicArray<T>& DynamicArray<T>::operator=(DynamicArray<T>&& other) noexcept {
     if(this != &other) {
         data = std::move(other.data);
         size = other.size;
-        capacity = other.capacity;
+        capacity   = other.capacity;
         other.size = 0;
         other.capacity = 0;
     }
