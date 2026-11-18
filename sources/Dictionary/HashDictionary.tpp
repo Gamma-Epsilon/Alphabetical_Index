@@ -2,11 +2,10 @@
 #define HASH_DICTIONARY_TPP
 
 #include <utility>
-#include <cstddef>
 
 #include "../../headers/Dictionary/HashDictionary.hpp"
 
-static const size_t HASH_MULTIPLIER = 31; // Коэффициент хеширования. 
+static const int HASH_MULTIPLIER = 31; // Коэффициент хеширования
 
 /* Конструкторы */
 template <class K, class V>
@@ -39,7 +38,7 @@ HashDictionary<K, V>& HashDictionary<K, V>::operator=(HashDictionary<K, V>&& oth
 /* Хеш-функция */
 template <class K, class V>
 int HashDictionary<K, V>::GetBucketIndex(const K& key) const {
-    size_t hash = 0; 
+    int hash = 0; 
 
     for(unsigned char c : key) {
         hash = hash * HASH_MULTIPLIER + c; 

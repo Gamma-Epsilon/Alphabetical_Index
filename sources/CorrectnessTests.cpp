@@ -426,13 +426,13 @@ void SortedSequenceTest() {
     assert(sorted[0] == 1 && sorted[1] == 2 && sorted[2] == 4 && sorted[3] == 5 && sorted[4] == 8);
 
     /* Поиск элементов */
-    int indx1 = sorted.Index(1);
-    int indx2 = sorted.Index(4);
-    int indx3 = sorted.Index(8);
+    int indx1 = sorted.Index(1, SearchMode::Half);
+    int indx2 = sorted.Index(4, SearchMode::Half);
+    int indx3 = sorted.Index(8, SearchMode::Half);
 
     assert(indx1 == 0 && indx2 == 2 && indx3 == 4);
 
-    int indx4 = sorted.Index(7); 
+    int indx4 = sorted.Index(7, SearchMode::Half); 
     
     assert(indx4 == -1);
 
@@ -454,7 +454,6 @@ void SortedSequenceTest() {
     SortedSequence<int> sorted_array(array);
 
     assert(sorted_array[0] == 1 && sorted_array[1] == 2 && sorted_array[2] == 3);
-
 
     /* Проверка с KeyValue */
     using Entry = KeyValue<std::string, DynamicArray<int>>;
@@ -489,11 +488,27 @@ void SortedSequenceTest() {
     target1.key = "planet"; 
     target2.key = "borik";
 
-    int indx5 = sortedWords.Index(target1);
-    int indx6 = sortedWords.Index(target2); 
+    int indx5 = sortedWords.Index(target1, SearchMode::Half);
+    int indx6 = sortedWords.Index(target2, SearchMode::Half); 
 
     assert(indx5 == 1);
     assert(indx6 == -1);
+
+    /* Проверка бинарного поиска с золотым сечением */
+    SortedSequence<int> sortedGolden;
+
+    sortedGolden.Add(10);
+    sortedGolden.Add(20);
+    sortedGolden.Add(30);
+    sortedGolden.Add(40);
+    sortedGolden.Add(50);
+
+    assert(sortedGolden.Index(10, SearchMode::Golden) == 0);
+    assert(sortedGolden.Index(30, SearchMode::Golden) == 2);
+    assert(sortedGolden.Index(50, SearchMode::Golden) == 4);
+    assert(sortedGolden.Index(35, SearchMode::Golden) == -1);
+    assert(sortedGolden.Index(5, SearchMode::Golden) == -1);
+    assert(sortedGolden.Index(60, SearchMode::Golden) == -1);
 
     std::cout << "SortedSequenceTest: [OK]" << std::endl;
 }

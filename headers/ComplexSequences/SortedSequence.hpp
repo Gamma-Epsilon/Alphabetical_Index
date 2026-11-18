@@ -10,7 +10,7 @@ private:
     DynamicArray<T> data;
 
     /* Разновидность бинарного поиска. Возвращаем позицию от 0 до size */
-    int LowerBound(const T& item) const;
+    int LowerBound(const T& item, SearchMode mode) const;
 public: 
     /* Создание объекта */
     SortedSequence();
@@ -29,13 +29,14 @@ public:
 
     /* Доступ к существующим элементам */
     const T& operator[](int index) const override;
+    T& operator[](int index) override;
     
     /* Операции */
     int  GetLength() const  override;
 
-    void Add(const T& item) override;
-    int  Index(const T& item) const override;
+    int Index(const T& item, SearchMode mode) const override; 
 
+    void Add(const T& item)    override;
 };
 
 #include "../../sources/ComplexSequences/SortedSequence.tpp"

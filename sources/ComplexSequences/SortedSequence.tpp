@@ -3,6 +3,8 @@
 
 #include "../../headers/ComplexSequences/SortedSequence.hpp"
 
+static const int GOLDEN_RATIO = 0.61803398875; // Коэффициент золотого сечения
+
 /* Создание объекта */
 template <class T> 
 SortedSequence<T>::SortedSequence() : data() {}
@@ -19,20 +21,28 @@ const T& SortedSequence<T>::operator[](int index) const {
     return data[index];
 }
 
+/* Пожалуйста, не изменяйте ключи, иначе сортировки не будет. Перегрузка нужна для построения алфавитного указателя */
+template <class T> 
+T& SortedSequence<T>::operator[](int index) {
+    return data[index];
+}
 
 /* Операции */
 template <class T> 
-int SortedSequence<T>::LowerBound(const T& item) const {
+int SortedSequence<T>::LowerBound(const T& item, SearchMode mode) const {
     int left  = 0; 
-    int rigth = data.GetLength(); // Вставить можно и после последнего элемента
+    int right = data.GetLength(); // Вставить можно и после последнего элемента
     
     // Ищем позицию эл-та, НЕ МЕНЬШЕ исходного 
-    while(left < rigth) {
-        int mid = left + (rigth - left) / 2; 
+    while(left < right) {
+        int mid; 
 
-        if(data[mid] < item) { left = mid + 1; }
-        else                 { rigth = mid; }
-        // data[mid] >= item выполняется rigth = mid, т.к. найденный элемент может быть правильной позицией
+        if(mode == SearchMode::Half) { mid = left + (right - left) / 2; }
+        else { mid = left + static_cast<int>((right - left) * GOLDEN_RATIO); }
+
+        if(data[mid] < item) { left  = mid + 1; }
+        else                 { right = mid; }
+        // data[mid] >= item выполняется right = mid, т.к. найденный элемент может быть правильной позицией
     }
     
     return left;
@@ -44,14 +54,14 @@ int SortedSequence<T>::GetLength() const { return data.GetLength(); }
 /* Вставка в отсортированном порядке (бинарная вставка) */
 template <class T> 
 void SortedSequence<T>::Add(const T& item) {
-    int index = LowerBound(item);
+    int index = LowerBound(item, SearchMode::Half);
     data.InsertAt(item, index);
 }
 
 /* Бинарный поиск O(logn) */
 template <class T> 
-int SortedSequence<T>::Index(const T& item) const {
-    int index = LowerBound(item);
+int SortedSequence<T>::Index(const T& item, SearchMode mode) const {
+    int index = LowerBound(item, mode);
 
     if(index >= 0 && index <= data.GetLength() - 1) {
         if(data[index] == item) { return index; }
