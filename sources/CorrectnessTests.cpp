@@ -609,6 +609,11 @@ void HashDictionaryTest() {
 }
 
 
+/* Алфавитный указатель */
+void AlphabeticalIndexTest() {
+
+}
+
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
@@ -626,6 +631,8 @@ int RunAllCorrectnessTests() {
     SortedSequenceTest();
 
     HashDictionaryTest();
+
+    AlphabeticalIndexTest();
 
     std::cout << "All tests passed!\n" << std::endl;
     

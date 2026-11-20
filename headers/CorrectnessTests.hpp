@@ -17,6 +17,8 @@
 
 #include "Dictionary/HashDictionary.hpp"
 
+#include "AlphabeticalIndex.hpp"
+
 /* Базовые структуры  */
 void DynamicArrayTest(); 
 void LinkedListTest(); 
@@ -38,7 +40,11 @@ void SortedSequenceTest();
 /* Hash-словарь */
 void HashDictionaryTest();
 
+/* Алфавитный указатель */
+void AlphabeticalIndexTest();
+
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();
+
 
 #endif /* CORRECTNESS_TESTS_HPP */

@@ -3,7 +3,7 @@
 
 #include "../../headers/ComplexSequences/SortedSequence.hpp"
 
-static const int GOLDEN_RATIO = 0.61803398875; // Коэффициент золотого сечения
+static const double GOLDEN_RATIO = 0.61803398875; // Коэффициент золотого сечения
 
 /* Создание объекта */
 template <class T> 
