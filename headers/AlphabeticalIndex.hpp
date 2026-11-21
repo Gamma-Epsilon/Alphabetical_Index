@@ -5,7 +5,13 @@
 #include <string> 
 
 #include "BaseSequences/DynamicArray.hpp"
+#include "ComplexSequences/SortedSequence.hpp"
+#include "Dictionary/HashDictionary.hpp"
+#include "KeyValue.hpp"
 #include "Exceptions.hpp"
+
+using ArrayIndex = SortedSequence<KeyValue<std::string, DynamicArray<int>>>;
+using HashIndex  = HashDictionary<std::string, DynamicArray<int>>;
 
 /* Для возможности разбиения по кол-ву символов или слов */
 enum class PageUnit {
@@ -24,5 +30,10 @@ DynamicArray<DynamicArray<std::string>> SplitIntoPages(const std::string& text, 
 /* Подсчет размера слова */
 int CountChars(const std::string& word);
 
+/* Создание указателя на основе массива */
+ArrayIndex BuildSortedIndex(const DynamicArray<DynamicArray<std::string>>& pages);
+
+/* Создание указателя на основе хеш-таблицы */
+HashIndex BuildHashIndex(const DynamicArray<DynamicArray<std::string>>& pages, int bucketCount);
 
 #endif /* ALPHABETICAL_INDEX_HPP */

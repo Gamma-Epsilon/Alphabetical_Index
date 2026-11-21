@@ -5,6 +5,7 @@
 
 #include "../headers/AlphabeticalIndex.hpp"
 
+
 int GetPageLimit(int pageNumber, int pageSize) {
     if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
     
@@ -90,5 +91,58 @@ int CountChars(const std::string& word) {
 
     return length;
 }
+
+
+/* Создание указателя на основе массива */
+ArrayIndex BuildSortedIndex(const DynamicArray<DynamicArray<std::string>>& pages) {
+    ArrayIndex array; 
+
+    for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
+        for(int j = 0; j < pages[i].GetLength(); j++) {
+            KeyValue<std::string, DynamicArray<int>> word; 
+            word.key = pages[i][j]; 
+
+            int indx       = array.Index(word, SearchMode::Half);
+            int pageNumber = i + 1; // Т.к страницы с единицы
+
+            if(indx != -1) {
+                DynamicArray<int>& numbers = array[indx].value;
+
+                // Страницы в порядке возрастания
+                if(numbers.GetLength() == 0 || numbers[numbers.GetLength() - 1] != pageNumber) numbers.Append(pageNumber); 
+            } else {
+                word.value.Append(pageNumber);
+                array.Add(word);
+            }
+        }   
+    }
+
+    return array;
+}
+
+
+/* Создание указателя на основе хеш-таблицы */
+HashIndex BuildHashIndex(const DynamicArray<DynamicArray<std::string>>& pages, int bucketCount) {
+    HashIndex dictionary(bucketCount); 
+
+    for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
+        for(int j = 0; j < pages[i].GetLength(); j++) {
+            int pageNumber = i + 1; 
+            const std::string& word = pages[i][j]; 
+
+            if(dictionary.ContainsKey(word)) {
+                DynamicArray<int>& numbers = dictionary.Get(word);
+                if(numbers.GetLength() == 0 || numbers[numbers.GetLength() - 1] != pageNumber) numbers.Append(pageNumber); 
+            } else {
+                DynamicArray<int> numbers; 
+                numbers.Append(pageNumber);
+                dictionary.Add(word, numbers);
+            }
+        }   
+    }
+
+    return dictionary;
+}
+
 
 #endif /* ALPHABETICAL_INDEX_CPP */

@@ -2,6 +2,7 @@
 #define HASH_DICTIONARY_TPP
 
 #include <utility>
+#include <cstddef>
 
 #include "../../headers/Dictionary/HashDictionary.hpp"
 
@@ -38,13 +39,13 @@ HashDictionary<K, V>& HashDictionary<K, V>::operator=(HashDictionary<K, V>&& oth
 /* Хеш-функция */
 template <class K, class V>
 int HashDictionary<K, V>::GetBucketIndex(const K& key) const {
-    int hash = 0; 
+    size_t hash = 0; 
 
     for(unsigned char c : key) {
         hash = hash * HASH_MULTIPLIER + c; 
     }
 
-    return static_cast<int>(hash % data.GetLength());
+    return static_cast<int>(hash % static_cast<size_t>(data.GetLength()));
 }
 
 template <class K, class V>
