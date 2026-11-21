@@ -1,9 +1,12 @@
 #include <utility>
 #include <cassert>
 #include <iostream>
+#include <iomanip>
 
 #include "../headers/CorrectnessTests.hpp"
 
+
+static const int totalWidth = 40;
 
 /* Базовые структуры */
 void DynamicArrayTest() {
@@ -60,7 +63,7 @@ void DynamicArrayTest() {
 
     assert(exception);
 
-    std::cout << "DynamicArrayTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "DynamicArrayTest:" << "[OK]" << std::endl;
 }
 
 void LinkedListTest() {
@@ -107,7 +110,7 @@ void LinkedListTest() {
 
     assert(exception);
 
-    std::cout << "LinkedListTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "LinkedListTest:" << "[OK]" << std::endl;
 }
 
 
@@ -151,7 +154,7 @@ void UniquePtrTest() {
 
     assert(ptr6[0] == 67 && ptr6[1] == 42 && ptr6[2] == 666);
 
-    std::cout << "UniquePtrTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "UniquePtrTest:" << "[OK]" << std::endl;
 } 
 
 void SharedPtrTest() {
@@ -235,7 +238,7 @@ void SharedPtrTest() {
     assert(ptr7.use_count() == 1);
     assert(ptr8.use_count() == 0);
 
-    std::cout << "SharedPtrTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "SharedPtrTest:" << "[OK]" << std::endl;
 }
 
 
@@ -300,7 +303,7 @@ void ArrayIteratorTest() {
 
     assert(exception_4);
 
-    std::cout << "ArrayIteratorTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "ArrayIteratorTest:" << "[OK]" << std::endl;
 }
 
 void ListIteratorTest() {
@@ -363,7 +366,7 @@ void ListIteratorTest() {
 
     assert(exception_4);
 
-    std::cout << "ListIteratorTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "ListIteratorTest:" << "[OK]" << std::endl;
 } 
 
 
@@ -408,7 +411,7 @@ void KeyValueTest() {
     assert(target1 < target2);
     assert(!(target1 == target2));
 
-    std::cout << "KeyValueTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "KeyValueTest:" << "[OK]" << std::endl;
 }
 
   
@@ -510,7 +513,7 @@ void SortedSequenceTest() {
     assert(sortedGolden.Index(5, SearchMode::Golden) == -1);
     assert(sortedGolden.Index(60, SearchMode::Golden) == -1);
 
-    std::cout << "SortedSequenceTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "SortedSequenceTest:" << "[OK]" << std::endl;
 }
 
 
@@ -605,13 +608,84 @@ void HashDictionaryTest() {
 
     assert(moved.GetCount() ==  2 && dictionary.GetCount() == 0);
 
-    std::cout << "HashDictionaryTest: [OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "HashDictionaryTest:" << "[OK]" << std::endl;
 }
 
 
 /* Алфавитный указатель */
 void AlphabeticalIndexTest() {
+    using alphIndex = DynamicArray<DynamicArray<std::string>>;
 
+    /* GetPageLimit */
+    assert(GetPageLimit(1, 10)  == 5);
+    assert(GetPageLimit(10, 15) == 11);
+    assert(GetPageLimit(5, 15)  == 15);
+
+    /* CountChars */
+    assert(CountChars("cat") == 3);
+    assert(CountChars("кот") == 3);
+    assert(CountChars("🚀🦊🍕") == 3);
+
+    /* Разбиение по словам */
+    alphIndex wordPages = SplitIntoPages("one two three four five", 4, PageUnit::Words);
+
+    assert(wordPages.GetLength()    == 2);
+    assert(wordPages[0].GetLength() == 2);
+    assert(wordPages[1].GetLength() == 3);
+
+    assert(wordPages[0][0] == "one");
+    assert(wordPages[0][1] == "two");
+    assert(wordPages[1][0] == "three");
+    assert(wordPages[1][1] == "four");
+    assert(wordPages[1][2] == "five");
+
+    /* Разбиение по символам */
+    alphIndex charPages = SplitIntoPages("cat dog bird fish tree sun", 10, PageUnit::Characters);
+
+    assert(charPages.GetLength()    == 4);
+    assert(charPages[0].GetLength() == 1);
+    assert(charPages[1].GetLength() == 2);
+    assert(charPages[2].GetLength() == 2);
+    assert(charPages[3].GetLength() == 1);
+
+    assert(charPages[0][0] == "cat");
+    assert(charPages[1][0] == "dog");
+    assert(charPages[1][1] == "bird");
+    assert(charPages[2][0] == "fish");
+    assert(charPages[2][1] == "tree");
+    assert(charPages[3][0] == "sun");
+
+    /* Пустой текст */
+    alphIndex empty = SplitIntoPages("", 10, PageUnit::Characters);
+
+    assert(empty.GetLength() == 0);
+
+    /* Слово не помещается на первой странице, но помещается на второй */
+    alphIndex bigWord = SplitIntoPages("котик милый", 8, PageUnit::Characters);
+
+    assert(bigWord.GetLength()    == 3);
+    assert(bigWord[0].GetLength() == 0);
+    assert(bigWord[1][0] == "котик");
+    assert(bigWord[2][0] == "милый");
+
+    /* Слово не помещается ни на одной странице */
+    alphIndex skippedWord = SplitIntoPages("тетрагидропиранилциклопентилтетрагидропиридопиридиновые кот", 10, PageUnit::Characters);
+
+    assert(skippedWord.GetLength() == 1);
+    assert(skippedWord[0][0] == "кот");
+
+    /* Некорректный размер страницы */
+    bool exceptionPage = false; 
+
+    try {
+        SplitIntoPages("I LOVE YOU", 0, PageUnit::Words);
+    } catch(const SizeIsNegative&) {
+        exceptionPage = true;
+    }
+
+    assert(exceptionPage);
+
+    std::cout << std::left << std::setw(totalWidth - 4) << "AlphabeticalIndexTest:" << "[OK]" << std::endl;
 }
 
 
@@ -634,7 +708,7 @@ int RunAllCorrectnessTests() {
 
     AlphabeticalIndexTest();
 
-    std::cout << "All tests passed!\n" << std::endl;
+    std::cout << "All tests passed! Congratulations! You're a good programmer" << std::endl;
     
     return 0;
 }

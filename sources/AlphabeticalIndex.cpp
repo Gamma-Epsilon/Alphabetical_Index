@@ -23,7 +23,7 @@ DynamicArray<DynamicArray<std::string>> SplitIntoPages(const std::string& text, 
 
     int pageNumber  = 1; 
     int currentUsed = 0; 
-    int required;
+    int required    = 0;
 
     std::istringstream stream(text); // Создаем поток ввода из строки text
     std::string word; 

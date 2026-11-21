@@ -1,8 +1,8 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2
 TARGET   = build/correctness_tests.exe
-SOURCES  = main.cpp sources/CorrectnessTests.cpp
-HEADERS  = $(wildcard headers/*.hpp headers/*/*.hpp sources/*/*.tpp)
+SOURCES  = main.cpp sources/CorrectnessTests.cpp sources/AlphabeticalIndex.cpp
+HEADERS  = $(wildcard headers/*.hpp headers/*/*.hpp sources/*/*.tpp sources/*/*.cpp)
 
 .PHONY: all test asan
 all: $(TARGET)
