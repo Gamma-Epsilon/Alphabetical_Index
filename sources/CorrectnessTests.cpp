@@ -6,7 +6,11 @@
 #include "../headers/CorrectnessTests.hpp"
 
 
-static const int totalWidth = 40;
+static const int totalWidth = 30;
+
+using alphIndex = DynamicArray<DynamicArray<std::string>>;
+using Dict = HashDictionary<std::string, int>;
+using Entry = KeyValue<std::string, DynamicArray<int>>;
 
 /* Базовые структуры */
 void DynamicArrayTest() {
@@ -372,7 +376,6 @@ void ListIteratorTest() {
 
 /* Структура ключ-значение */
 void KeyValueTest() {
-    using Entry = KeyValue<std::string, DynamicArray<int>>;
     Entry entry;
 
     /* Заполнение полей */
@@ -459,7 +462,6 @@ void SortedSequenceTest() {
     assert(sorted_array[0] == 1 && sorted_array[1] == 2 && sorted_array[2] == 3);
 
     /* Проверка с KeyValue */
-    using Entry = KeyValue<std::string, DynamicArray<int>>;
     SortedSequence<Entry> sortedWords;
 
     Entry first; 
@@ -519,7 +521,6 @@ void SortedSequenceTest() {
 
 /* Hash-словарь */
 void HashDictionaryTest() {
-    using Dict = HashDictionary<std::string, int>;
 
     Dict dictionary(1); // bucket = 1 для проверки коллизии 
 
@@ -614,7 +615,6 @@ void HashDictionaryTest() {
 
 /* Алфавитный указатель */
 void AlphabeticalIndexTest() {
-    using alphIndex = DynamicArray<DynamicArray<std::string>>;
 
     /* GetPageLimit */
     assert(GetPageLimit(1, 10)  == 5);
@@ -689,6 +689,159 @@ void AlphabeticalIndexTest() {
 }
 
 
+/* Указатель, построенный на основе массива */
+void ArrayIndexTest() {
+    
+    /* Указатель на уже готовых страницах */
+    alphIndex pages;
+    DynamicArray<std::string> firstPage;
+    firstPage.Append("planet");
+    firstPage.Append("science");
+    firstPage.Append("planet"); // Повтор на той же странице
+
+    DynamicArray<std::string> secondPage;
+    secondPage.Append("algorithm");
+    secondPage.Append("planet");
+    secondPage.Append("algorithm");
+
+    DynamicArray<std::string> thirdPage;
+    thirdPage.Append("science");
+    thirdPage.Append("planet");
+    
+    pages.Append(firstPage);
+    pages.Append(secondPage);    
+    pages.Append(thirdPage);
+
+    ArrayIndex array = BuildArrayIndex(pages);
+
+    assert(array.GetLength() == 3);  // 3 уникальных слова
+
+    assert(array[0].key == "algorithm");
+    assert(array[1].key == "planet"); 
+    assert(array[2].key == "science");
+
+    assert(array[1].value.GetLength() == 3 && array[1].value[0] == 1 && array[1].value[1] == 2 && array[1].value[2] == 3);
+    assert(array[0].value[0] == 2);
+
+    /* Пустой массив страниц */
+    alphIndex empty; 
+
+    ArrayIndex empty_index = BuildArrayIndex(empty);
+
+    assert(empty_index.GetLength() == 0);
+
+    /* Пустые страницы */
+    alphIndex someEmptyPages; 
+
+    DynamicArray<std::string> first;
+
+    DynamicArray<std::string> second; 
+    second.Append("planet");
+
+    DynamicArray<std::string> third; 
+    
+    DynamicArray<std::string> fourth; 
+    fourth.Append("planet");
+    fourth.Append("science");
+
+    someEmptyPages.Append(first);
+    someEmptyPages.Append(second);
+    someEmptyPages.Append(third);
+    someEmptyPages.Append(fourth);
+
+    assert(someEmptyPages.GetLength() == 4);
+
+    ArrayIndex littleEmptyIndex = BuildArrayIndex(someEmptyPages);
+
+    assert(littleEmptyIndex.GetLength() == 2);
+
+    assert(littleEmptyIndex[0].key == "planet");
+    assert(littleEmptyIndex[1].key == "science");
+
+    assert(littleEmptyIndex[0].value[0] == 2 && littleEmptyIndex[0].value[1] == 4);
+    assert(littleEmptyIndex[1].value[0] == 4);
+
+    std::cout << std::left << std::setw(totalWidth - 4) << "ArrayIndexTest:" << "[OK]" << std::endl;
+}
+
+
+/* Указатель, построенный на основе хеш-таблицы */
+void HashIndexTest() {
+
+    /* Указатель на уже готовых страницах */
+    alphIndex pages;
+    DynamicArray<std::string> firstPage;
+    firstPage.Append("planet");
+    firstPage.Append("science");
+    firstPage.Append("planet"); // Повтор на той же странице
+
+    DynamicArray<std::string> secondPage;
+    secondPage.Append("algorithm");
+    secondPage.Append("planet");
+    secondPage.Append("algorithm");
+
+    DynamicArray<std::string> thirdPage;
+    thirdPage.Append("science");
+    thirdPage.Append("planet");
+    
+    pages.Append(firstPage);
+    pages.Append(secondPage);    
+    pages.Append(thirdPage);
+
+    HashIndex dictionary = BuildHashIndex(pages, 1);
+    
+    assert(dictionary.GetCount() == 3);  // 3 уникальных слова
+
+    assert(dictionary.ContainsKey("algorithm"));
+    assert(dictionary.ContainsKey("planet"));
+    assert(dictionary.ContainsKey("science"));
+
+    assert(dictionary.Get("algorithm")[0] == 2);
+    assert(dictionary.Get("planet")[0] == 1 && dictionary.Get("planet")[1] == 2 && dictionary.Get("planet")[2] == 3);
+    assert(dictionary.Get("science")[0] == 1 && dictionary.Get("science")[1] == 3);
+
+    /* Пустой массив страниц */
+    alphIndex empty; 
+
+    HashIndex empty_index = BuildHashIndex(empty, 1);
+
+    assert(empty_index.GetCount() == 0);
+
+    /* Пустые страницы */
+    alphIndex someEmptyPages; 
+
+    DynamicArray<std::string> first;
+
+    DynamicArray<std::string> second; 
+    second.Append("planet");
+
+    DynamicArray<std::string> third; 
+    
+    DynamicArray<std::string> fourth; 
+    fourth.Append("planet");
+    fourth.Append("science");
+
+    someEmptyPages.Append(first);
+    someEmptyPages.Append(second);
+    someEmptyPages.Append(third);
+    someEmptyPages.Append(fourth);
+
+    assert(someEmptyPages.GetLength() == 4);
+
+    HashIndex littleEmptyIndex = BuildHashIndex(someEmptyPages, 1);
+
+    assert(littleEmptyIndex.GetCount() == 2);
+
+    assert(littleEmptyIndex.ContainsKey("planet"));
+    assert(littleEmptyIndex.ContainsKey("science"));
+
+    assert(littleEmptyIndex.Get("planet")[0] == 2 && littleEmptyIndex.Get("planet")[1] == 4);
+    assert(littleEmptyIndex.Get("science")[0] == 4);
+
+    std::cout << std::left << std::setw(totalWidth - 4) << "HashIndexTest:" << "[OK]" << std::endl;
+}
+
+
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
@@ -707,8 +860,10 @@ int RunAllCorrectnessTests() {
     HashDictionaryTest();
 
     AlphabeticalIndexTest();
+    ArrayIndexTest();
+    HashIndexTest();
 
-    std::cout << "All tests passed! Congratulations! You're a good programmer" << std::endl;
+    std::cout << "\nAll tests passed! Congratulations! You're a good programmer" << std::endl;
     
     return 0;
 }

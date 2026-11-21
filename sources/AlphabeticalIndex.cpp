@@ -94,7 +94,7 @@ int CountChars(const std::string& word) {
 
 
 /* Создание указателя на основе массива */
-ArrayIndex BuildSortedIndex(const DynamicArray<DynamicArray<std::string>>& pages) {
+ArrayIndex BuildArrayIndex(const DynamicArray<DynamicArray<std::string>>& pages) {
     ArrayIndex array; 
 
     for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */

@@ -31,7 +31,7 @@ DynamicArray<DynamicArray<std::string>> SplitIntoPages(const std::string& text, 
 int CountChars(const std::string& word);
 
 /* Создание указателя на основе массива */
-ArrayIndex BuildSortedIndex(const DynamicArray<DynamicArray<std::string>>& pages);
+ArrayIndex BuildArrayIndex(const DynamicArray<DynamicArray<std::string>>& pages);
 
 /* Создание указателя на основе хеш-таблицы */
 HashIndex BuildHashIndex(const DynamicArray<DynamicArray<std::string>>& pages, int bucketCount);

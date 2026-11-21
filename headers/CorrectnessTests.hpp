@@ -42,6 +42,8 @@ void HashDictionaryTest();
 
 /* Алфавитный указатель */
 void AlphabeticalIndexTest();
+void ArrayIndexTest();
+void HashIndexTest();
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();
