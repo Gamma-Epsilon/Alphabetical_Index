@@ -5,6 +5,12 @@
 
 #include "../headers/AlphabeticalIndex.hpp"
 
+static const std::string punctuation[] = {".", ",", "!", "?", ";", ":", 
+    "\"", "'", "(", ")", "[", "]",
+    "«", "»", "—", "–", "…"}; 
+
+static const std::string lower_rus = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+static const std::string UPPER_RUS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
 int GetPageLimit(int pageNumber, int pageSize) {
     if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
@@ -13,6 +19,87 @@ int GetPageLimit(int pageNumber, int pageSize) {
     if(pageNumber % 10 == 0) return pageSize * 3/4;
     
     return pageSize;
+}
+
+
+std::string Lower(const std::string& word) {
+    /* Приведение к нижнему регистру */
+    std::string result; 
+
+    size_t i = 0;
+    while(i < word.size()) {
+        char c = word[i];
+
+        if(c >= 'A' && c <= 'Z') {  // Если буква английская
+            char end_lower = c + ('a' - 'A');
+
+            result += end_lower;
+            i += 1;
+        } else if(i + 1 < word.size()) { // Если есть еще один байт (буква, возможно, русская)
+            std::string rus  = word.substr(i, 2);
+            size_t rus_upper = UPPER_RUS.find(rus);
+            
+            if(rus_upper != std::string::npos) {
+                std::string rus_lower = lower_rus.substr(rus_upper, 2);
+                result += rus_lower;
+                i += 2;
+            } else {
+                result += c; 
+                i += 1;
+            }
+        } else {
+            result += c;
+            i += 1;
+        }
+    }
+
+    return result; 
+}
+
+
+std::string NormalizeWord(const std::string& word) {
+    /* Удаление крайних знаков препинания */
+    size_t left  = 0; 
+    size_t right = word.size(); // word[right - 1] - последний байт
+
+    
+    while(left < right) {
+        bool found = false; 
+        for(const std::string& symbol : punctuation) {
+
+            if(symbol.size() > right - left) continue; // Помещается ли символ в принципе? 
+
+            if(word.compare(left, symbol.size(), symbol) == 0) {
+                left += symbol.size(); 
+                found = true;
+                break;
+            }
+        }
+
+        if(!found) break;
+    }
+
+    while(right > left) {
+        bool found = false;
+        for(const std::string& symbol : punctuation) {
+
+            if(symbol.size() > right - left) continue; 
+
+            if(word.compare(right - symbol.size(), symbol.size(), symbol) == 0) {
+                right -= symbol.size(); 
+                found = true;
+                break;
+            }
+        }
+
+        if(!found) break;
+    }
+
+    std::string normalizedWord = word.substr(left, right - left);
+
+    /* Приведение к нижнему регистру и возврат */
+
+    return Lower(normalizedWord);
 }
 
 

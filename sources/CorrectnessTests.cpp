@@ -9,8 +9,9 @@
 static const int totalWidth = 30;
 
 using alphIndex = DynamicArray<DynamicArray<std::string>>;
-using Dict = HashDictionary<std::string, int>;
-using Entry = KeyValue<std::string, DynamicArray<int>>;
+using Dict      = HashDictionary<std::string, int>;
+using Entry     = KeyValue<std::string, DynamicArray<int>>;
+
 
 /* Базовые структуры */
 void DynamicArrayTest() {
@@ -842,6 +843,40 @@ void HashIndexTest() {
 }
 
 
+void NormalizeWordTest() {
+
+    std::string str1 = NormalizeWord("Hello");
+    std::string str2 = NormalizeWord("!!!Hello");
+    std::string str3 = NormalizeWord("Hello!!!");
+
+    std::string str4 = NormalizeWord("Привет");
+    std::string str5 = NormalizeWord("!!!Привет!");
+
+    std::string str6 = NormalizeWord("!!!");
+    std::string str7 = NormalizeWord("кто-нибудь,");
+    std::string str8 = NormalizeWord("...HELLO!!");
+
+    std::string str9 = NormalizeWord("");
+
+
+
+    assert(str1 == "hello");
+    assert(str2 == "hello");
+    assert(str3 == "hello");
+
+    assert(str4 == "привет");
+    assert(str5 == "привет");
+
+    assert(str6 == "");
+    assert(str7 == "кто-нибудь");
+    assert(str8 == "hello");
+
+    assert(str9 == "");
+
+    std::cout << std::left << std::setw(totalWidth - 4) << "NormalizeWordTest:" << "[OK]" << std::endl;
+}
+
+
 /* Запуск всех тестов */
 int RunAllCorrectnessTests() {
     DynamicArrayTest();
@@ -862,6 +897,7 @@ int RunAllCorrectnessTests() {
     AlphabeticalIndexTest();
     ArrayIndexTest();
     HashIndexTest();
+    NormalizeWordTest();
 
     std::cout << "\nAll tests passed! Congratulations! You're a good programmer" << std::endl;
     

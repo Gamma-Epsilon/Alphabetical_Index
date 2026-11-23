@@ -24,6 +24,12 @@ enum class PageUnit {
 /* Лимит символов на странице в зависимости от правил */
 int GetPageLimit(int pageNumber, int pageSize);
 
+/* Приведение слова к нижнему регистру и удаление символов по краям */
+std::string NormalizeWord(const std::string& word);
+
+/* Приведение слов к нижнему регистру */
+std::string Lower(const std::string& word);
+
 /* Разбиение по страницам */
 DynamicArray<DynamicArray<std::string>> SplitIntoPages(const std::string& text, int pageSize, PageUnit unit);
 

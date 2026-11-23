@@ -19,6 +19,7 @@
 
 #include "AlphabeticalIndex.hpp"
 
+
 /* Базовые структуры  */
 void DynamicArrayTest(); 
 void LinkedListTest(); 
@@ -44,6 +45,7 @@ void HashDictionaryTest();
 void AlphabeticalIndexTest();
 void ArrayIndexTest();
 void HashIndexTest();
+void NormalizeWordTest();
 
 /* Запуск всех тестов */
 int RunAllCorrectnessTests();
