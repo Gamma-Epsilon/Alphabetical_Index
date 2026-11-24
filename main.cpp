@@ -114,11 +114,20 @@ int main() {
                 }
                 HashIndex dict = BuildHashIndex(pages, bucketCount);
 
-                for(int i = 1; i <= bucketCount; i++) {
-                    for(int j = 1; j <= dict.GetCount(); j++) {
-                        
-                    }
+                auto iterator = dict.GetIterator(); 
+
+                while(iterator->HasNext()) {
+                    const auto& entry = iterator->Next(); 
+
+                    std::cout << "Слово '" << entry.key << "': "; 
+                    for(int i = 0; i < entry.value.GetLength(); i++) {
+                            std::cout << entry.value[i] << " ";
+                        }
+                    std::cout << "\n";
                 }
+
+                ClearInputBuffer();
+                WaitingForEnter();
             }
 
             break;
