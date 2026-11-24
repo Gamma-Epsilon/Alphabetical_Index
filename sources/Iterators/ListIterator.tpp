@@ -14,7 +14,7 @@ bool ListIterator<T>::HasNext() const {
 
 template <class T>
 const T& ListIterator<T>::Next() {
-    if(!HasNext()) throw IndexOutOfRange("ListIterator::Next - no next element.");
+    if(!HasNext()) throw IteratorDoesNotHaveNext("ListIterator::Next - no next element.");
     
     const T& result = nextNode->value;
     nextNode = nextNode->next.get(); 

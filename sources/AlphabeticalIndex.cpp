@@ -187,7 +187,7 @@ ArrayIndex BuildArrayIndex(const DynamicArray<DynamicArray<std::string>>& pages)
     for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
         for(int j = 0; j < pages[i].GetLength(); j++) {
             KeyValue<std::string, DynamicArray<int>> word; 
-            word.key = pages[i][j]; 
+            word.key = NormalizeWord(pages[i][j]); 
 
             int indx       = array.Index(word, SearchMode::Half);
             int pageNumber = i + 1; // Т.к страницы с единицы
@@ -215,7 +215,7 @@ HashIndex BuildHashIndex(const DynamicArray<DynamicArray<std::string>>& pages, i
     for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
         for(int j = 0; j < pages[i].GetLength(); j++) {
             int pageNumber = i + 1; 
-            const std::string& word = pages[i][j]; 
+            const std::string& word = NormalizeWord(pages[i][j]); 
 
             if(dictionary.ContainsKey(word)) {
                 DynamicArray<int>& numbers = dictionary.Get(word);

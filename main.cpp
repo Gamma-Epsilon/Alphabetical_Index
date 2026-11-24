@@ -10,11 +10,10 @@ using Entry     = KeyValue<std::string, DynamicArray<int>>;
 
 int main() { 
 
-    std::cout << "АЛФАВИТНЫЙ УКАЗАТЕЛЬ\n";
-
     ClearScreen(); 
 
     while(true) {
+        std::cout << "АЛФАВИТНЫЙ УКАЗАТЕЛЬ\n";
         std::cout << "Главное меню:\n"
                   << "1) Ручной режим\n"
                   << "2) Тесты корректности\n"
@@ -36,7 +35,9 @@ int main() {
         std::string separation; 
         int pageSize; 
         alphIndex pages;    
-
+        
+        int indexChoice;
+        int bucketCount;
         switch (main_choice) {
 
         case 1: 
@@ -44,17 +45,17 @@ int main() {
             std::cout << "Введите текст:\n";
             std::getline(std::cin, text); // Считываем всю строку до Enter
 
-            std::cout << "Введите способ разбиения ('символ' или 'слово'))\n";
+            std::cout << "Введите способ разбиения ('символ' или 'слово')): ";
             std::cin  >> separation;
 
             if(separation == "символ") {
-                std::cout << "Введите количество символов на стандартной странице\n";
+                std::cout << "Введите количество символов на стандартной странице: ";
                 std::cin  >> pageSize; 
 
                 pages = SplitIntoPages(text, pageSize, PageUnit::Characters);
 
             } else if(separation == "слово") {
-                std::cout << "Введите количество слов на стандартной странице\n";
+                std::cout << "Введите количество слов на стандартной странице: ";
                 std::cin  >> pageSize; 
 
                 pages = SplitIntoPages(text, pageSize, PageUnit::Words);
@@ -77,7 +78,49 @@ int main() {
             }
 
             ClearInputBuffer();
-            WaitingForEnter();
+
+            std::cout << "Выберите вид указателя:\n"
+                      << "1) Отсортированный массив\n"
+                      << "2) Хеш-таблица\n";
+            std::cout << "Ваш выбор: ";
+            if(!(std::cin >> indexChoice)) {
+                ClearInputBuffer();
+                std::cout << "Неверный ввод.\n";
+                WaitingForEnter();
+                continue;
+            }
+
+            if(indexChoice == 1) {
+                ArrayIndex array = BuildArrayIndex(pages);
+                std::cout << "Указатель построен!\n";
+
+                for(int i = 0; i < array.GetLength(); i++) {
+                    std::cout << "Слово [" << (i + 1) << "]: " << array[i].key << ": {";
+                    for(int j = 0; j < array[i].value.GetLength(); j++) {
+                        std::cout << array[i].value[j];
+                    }
+                    std::cout << "}\n";
+                }
+                ClearInputBuffer(); 
+                WaitingForEnter();
+
+            } else if(indexChoice == 2) {
+                std::cout << "Выберите количество корзин в хеш-таблице (1, 2, 3, ...): ";
+                if(!(std::cin >> bucketCount)) {
+                    ClearInputBuffer();
+                    std::cout << "Неверный ввод.\n";
+                    WaitingForEnter();
+                    continue;
+                }
+                HashIndex dict = BuildHashIndex(pages, bucketCount);
+
+                for(int i = 1; i <= bucketCount; i++) {
+                    for(int j = 1; j <= dict.GetCount(); j++) {
+                        
+                    }
+                }
+            }
+
             break;
 
         case 2:

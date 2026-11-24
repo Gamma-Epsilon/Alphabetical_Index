@@ -74,4 +74,17 @@ public:
 };
 
 
+class IteratorDoesNotHaveNext : public std::exception {
+private:
+    std::string message;
+public:
+    /* Конструкторы */
+    IteratorDoesNotHaveNext() : message("The key already is in a dictionary") {}
+    explicit IteratorDoesNotHaveNext(const std::string& msg) : message(msg) {} 
+    
+    const char* what() const noexcept override {
+        return message.c_str(); // Возвращение текстового сообщения об ошибке
+    }
+};
+
 #endif /* EXCEPTIONS_H */

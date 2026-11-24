@@ -3,9 +3,6 @@
 
 #include "ISequence.hpp"
 
-/* Предварительное объявление */
-template <class T>
-class ArrayIterator;
 
 template <class T>
 class DynamicArray : public ISequence<T> {

@@ -7,6 +7,7 @@
 
 #include "Iterators/ArrayIterator.hpp"
 #include "Iterators/ListIterator.hpp"
+#include "Iterators/HashIterator.hpp"
 
 #include "Pointers/UniquePtr.hpp"
 #include "Pointers/SharedPtr.hpp"
@@ -31,6 +32,7 @@ void SharedPtrTest();
 /* Итераторы на базовые структуры */
 void ArrayIteratorTest(); 
 void ListIteratorTest(); 
+void HashIteratorTest();
 
 /* Структура ключ-значение */
 void KeyValueTest();

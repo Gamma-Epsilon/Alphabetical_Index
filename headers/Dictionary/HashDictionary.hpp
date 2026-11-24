@@ -8,6 +8,7 @@
 #include "../KeyValue.hpp"
 #include "../Exceptions.hpp"
 
+
 template <class K, class V> 
 class HashDictionary : public IDictionary<K, V> {
 private: 
@@ -30,6 +31,9 @@ public:
 
     /* Удаление объекта */
     ~HashDictionary() = default; 
+
+    /* Итератор */
+    UniquePtr<Iterator<KeyValue<K, V>>> GetIterator() const override;
 
     /* Операции */
     V& Get(const K& key) override;

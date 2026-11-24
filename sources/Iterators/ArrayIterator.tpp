@@ -14,7 +14,7 @@ bool ArrayIterator<T>::HasNext() const {
 
 template <class T>
 const T& ArrayIterator<T>::Next() {
-    if(!HasNext()) throw IndexOutOfRange("ArrayIterator::Next - no next element.");
+    if(!HasNext()) throw IteratorDoesNotHaveNext("ArrayIterator::Next - no next element.");
     
     return data[nextIndex++];
 }

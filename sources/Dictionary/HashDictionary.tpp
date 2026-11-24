@@ -5,6 +5,7 @@
 #include <cstddef>
 
 #include "../../headers/Dictionary/HashDictionary.hpp"
+#include "../../headers/Iterators/HashIterator.hpp"
 
 static const int HASH_MULTIPLIER = 31; // Коэффициент хеширования
 
@@ -34,6 +35,12 @@ HashDictionary<K, V>& HashDictionary<K, V>::operator=(HashDictionary<K, V>&& oth
 
     return *this;
 } 
+
+/* Итератор */
+template <class K, class V>
+UniquePtr<Iterator<KeyValue<K, V>>> HashDictionary<K, V>::GetIterator() const {
+    return UniquePtr<Iterator<KeyValue<K, V>>>(new HashIterator<K, V>(data));
+}
 
 /* Операции */
 /* Хеш-функция */

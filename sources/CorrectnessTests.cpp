@@ -11,6 +11,7 @@ static const int totalWidth = 30;
 using alphIndex = DynamicArray<DynamicArray<std::string>>;
 using Dict      = HashDictionary<std::string, int>;
 using Entry     = KeyValue<std::string, DynamicArray<int>>;
+using DictIterator = UniquePtr<Iterator<KeyValue<std::string, int>>>;
 
 
 /* Базовые структуры */
@@ -247,7 +248,7 @@ void SharedPtrTest() {
 }
 
 
-/* Итераторы на базовые структуры */
+/* Итераторы */
 void ArrayIteratorTest() {
     int many[5] = {1, 2, 3, 4, 5};
     int one[1]  = {67};
@@ -265,7 +266,7 @@ void ArrayIteratorTest() {
 
     try {
         iterator_3->Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_1 = true; 
     }
 
@@ -278,7 +279,7 @@ void ArrayIteratorTest() {
     bool exception_2 = false;
     try {
         iterator_2.Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_2 = true;
     }
 
@@ -291,7 +292,7 @@ void ArrayIteratorTest() {
         while(iterator_1->HasNext()) {
             iterator_1->Next();
         }
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_3 = true;
     }
 
@@ -302,7 +303,7 @@ void ArrayIteratorTest() {
 
     try {
         iterator_1->Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_4 = true; 
     }
 
@@ -328,7 +329,7 @@ void ListIteratorTest() {
 
     try {
         iterator_3->Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_1 = true; 
     }
 
@@ -341,7 +342,7 @@ void ListIteratorTest() {
     bool exception_2 = false;
     try {
         iterator_2.Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_2 = true;
     }
 
@@ -354,7 +355,7 @@ void ListIteratorTest() {
         while(iterator_1->HasNext()) {
             iterator_1->Next();
         }
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_3 = true;
     }
 
@@ -365,7 +366,7 @@ void ListIteratorTest() {
 
     try {
         iterator_1->Next();
-    } catch(const IndexOutOfRange&) {
+    } catch(const IteratorDoesNotHaveNext&) {
         exception_4 = true; 
     }
 
@@ -373,6 +374,108 @@ void ListIteratorTest() {
 
     std::cout << std::left << std::setw(totalWidth - 4) << "ListIteratorTest:" << "[OK]" << std::endl;
 } 
+
+void HashIteratorTest() {
+
+    /* Пустая хеш-таблица */
+    Dict empty(5); 
+    DictIterator iteratorEmpty = empty.GetIterator();
+
+    assert(!iteratorEmpty->HasNext());
+
+    bool emptyException = false; 
+
+    try {
+        iteratorEmpty->Next();
+    } catch (const IteratorDoesNotHaveNext&) {
+        emptyException = true;
+    }
+
+    assert(emptyException);
+
+    /* Один элемент */
+    Dict one(5); 
+    one.Add("planet", 42);
+
+    DictIterator oneIterator = one.GetIterator();
+    assert(oneIterator->HasNext());
+
+    const KeyValue<std::string, int>& oneEntry = oneIterator->Next(); 
+    assert(oneEntry.key   == "planet");
+    assert(oneEntry.value == 42);
+    assert(!oneIterator->HasNext());
+
+    /* Несколько элементов в одной корзине */
+    Dict collisions(1); 
+
+    collisions.Add("planet", 10);
+    collisions.Add("science", 20);
+    collisions.Add("algorithm", 30);
+
+    DictIterator collisionIterator = collisions.GetIterator(); 
+
+    assert(collisionIterator->HasNext());
+    assert(collisionIterator->Next().key == "planet");
+    
+    assert(collisionIterator->HasNext());
+    assert(collisionIterator->Next().key == "science");
+    
+    assert(collisionIterator->HasNext());
+    assert(collisionIterator->Next().key == "algorithm");
+
+    assert(!collisionIterator->HasNext());
+
+    /* Выход за пределы последовательности */
+    bool exceptionEnd = false; 
+
+    try {
+        collisionIterator->Next();
+    } catch(const IteratorDoesNotHaveNext&) {
+        exceptionEnd = true;
+    }
+
+    assert(exceptionEnd);
+
+    /* Несколько корзин вместе с пустыми */
+    Dict many(7); 
+
+    const std::string keys[5] = {"planet", "science", "algorithm", "cosmos", "star"};
+    for(int i = 0; i < 5; i++) many.Add(keys[i], (i + 1) * 10);
+
+    DictIterator iterator = many.GetIterator();
+
+    bool seen[5] = {false, false, false, false, false};
+    int visited = 0; 
+
+    while(iterator->HasNext()) {
+        const KeyValue<std::string, int>& entry = iterator->Next(); 
+        int position = -1; 
+
+        for(int i = 0; i < 5; i++) {
+            if(keys[i] == entry.key) {
+                position = i;
+                break;
+            }
+        }
+
+        assert(position != -1);  // Элемент получен
+        assert(!seen[position]); // Элемент не возвращается дважды
+        seen[position] = true;
+
+        assert(entry.value == (position + 1) * 10);
+
+        visited++; 
+        assert(visited <= 5);
+    }
+
+    /* Все элементы посещены */
+    assert(visited == many.GetCount());
+    assert(visited == 5);
+
+    for(int i = 0; i < 5; i++) assert(seen[i]);
+
+    std::cout << std::left << std::setw(totalWidth - 4) << "HashIteratorTest:" << "[OK]" << std::endl;    
+}
 
 
 /* Структура ключ-значение */
@@ -696,18 +799,18 @@ void ArrayIndexTest() {
     /* Указатель на уже готовых страницах */
     alphIndex pages;
     DynamicArray<std::string> firstPage;
-    firstPage.Append("planet");
-    firstPage.Append("science");
+    firstPage.Append("!!!PLANeT");
+    firstPage.Append("SCience!!");
     firstPage.Append("planet"); // Повтор на той же странице
 
     DynamicArray<std::string> secondPage;
-    secondPage.Append("algorithm");
-    secondPage.Append("planet");
+    secondPage.Append("ALGORITHM");
+    secondPage.Append("PlaneT");
     secondPage.Append("algorithm");
 
     DynamicArray<std::string> thirdPage;
     thirdPage.Append("science");
-    thirdPage.Append("planet");
+    thirdPage.Append("planet!!!");
     
     pages.Append(firstPage);
     pages.Append(secondPage);    
@@ -772,18 +875,18 @@ void HashIndexTest() {
     /* Указатель на уже готовых страницах */
     alphIndex pages;
     DynamicArray<std::string> firstPage;
-    firstPage.Append("planet");
-    firstPage.Append("science");
+    firstPage.Append("!!!Planet");
+    firstPage.Append("??SCIENCE");
     firstPage.Append("planet"); // Повтор на той же странице
 
     DynamicArray<std::string> secondPage;
-    secondPage.Append("algorithm");
-    secondPage.Append("planet");
+    secondPage.Append("ALGorIthm");
+    secondPage.Append("PLAnet??!!");
     secondPage.Append("algorithm");
 
     DynamicArray<std::string> thirdPage;
     thirdPage.Append("science");
-    thirdPage.Append("planet");
+    thirdPage.Append("PLANET");
     
     pages.Append(firstPage);
     pages.Append(secondPage);    
@@ -884,6 +987,7 @@ int RunAllCorrectnessTests() {
 
     ArrayIteratorTest(); 
     ListIteratorTest();
+    HashIteratorTest();
 
     UniquePtrTest(); 
     SharedPtrTest();
