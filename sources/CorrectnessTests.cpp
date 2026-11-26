@@ -8,9 +8,8 @@
 
 static const int totalWidth = 30;
 
-using alphIndex = DynamicArray<DynamicArray<std::string>>;
-using Dict      = HashDictionary<std::string, int>;
-using Entry     = KeyValue<std::string, DynamicArray<int>>;
+using Dict         = HashDictionary<std::string, int>;
+using Entry        = KeyValue<std::string, DynamicArray<int>>;
 using DictIterator = UniquePtr<Iterator<KeyValue<std::string, int>>>;
 
 
@@ -731,52 +730,59 @@ void AlphabeticalIndexTest() {
     assert(CountChars("🚀🦊🍕") == 3);
 
     /* Разбиение по словам */
-    alphIndex wordPages = SplitIntoPages("one two three four five", 4, PageUnit::Words);
+    PaginationResult wordPages = SplitIntoPages("one two three four five", 4, PageUnit::Words);
 
-    assert(wordPages.GetLength()    == 2);
-    assert(wordPages[0].GetLength() == 2);
-    assert(wordPages[1].GetLength() == 3);
+    assert(wordPages.pages.GetLength()    == 2);
+    assert(wordPages.pages[0].GetLength() == 2);
+    assert(wordPages.pages[1].GetLength() == 3);
 
-    assert(wordPages[0][0] == "one");
-    assert(wordPages[0][1] == "two");
-    assert(wordPages[1][0] == "three");
-    assert(wordPages[1][1] == "four");
-    assert(wordPages[1][2] == "five");
+    assert(wordPages.pages[0][0] == "one");
+    assert(wordPages.pages[0][1] == "two");
+    assert(wordPages.pages[1][0] == "three");
+    assert(wordPages.pages[1][1] == "four");
+    assert(wordPages.pages[1][2] == "five");
 
     /* Разбиение по символам */
-    alphIndex charPages = SplitIntoPages("cat dog bird fish tree sun", 10, PageUnit::Characters);
+    PaginationResult charPages = SplitIntoPages("cat dog bird fish tree sun", 10, PageUnit::Characters);
 
-    assert(charPages.GetLength()    == 4);
-    assert(charPages[0].GetLength() == 1);
-    assert(charPages[1].GetLength() == 2);
-    assert(charPages[2].GetLength() == 2);
-    assert(charPages[3].GetLength() == 1);
+    assert(charPages.pages.GetLength()    == 4);
+    assert(charPages.pages[0].GetLength() == 2);
+    assert(charPages.pages[1].GetLength() == 3);
+    assert(charPages.pages[2].GetLength() == 3);
+    assert(charPages.pages[3].GetLength() == 1);
 
-    assert(charPages[0][0] == "cat");
-    assert(charPages[1][0] == "dog");
-    assert(charPages[1][1] == "bird");
-    assert(charPages[2][0] == "fish");
-    assert(charPages[2][1] == "tree");
-    assert(charPages[3][0] == "sun");
+    assert(charPages.pages[0][0] == "cat");
+    assert(charPages.pages[0][1] == "d");
+    assert(charPages.pages[1][0] == "og");
+    assert(charPages.pages[1][1] == "bird");
+    assert(charPages.pages[1][2] == "fi");
+    assert(charPages.pages[2][0] == "sh");
+    assert(charPages.pages[2][1] == "tree");
+    assert(charPages.pages[2][2] == "su");
+    assert(charPages.pages[3][0] == "n");
 
     /* Пустой текст */
-    alphIndex empty = SplitIntoPages("", 10, PageUnit::Characters);
+    PaginationResult empty = SplitIntoPages("", 10, PageUnit::Characters);
 
-    assert(empty.GetLength() == 0);
+    assert(empty.pages.GetLength() == 0);
 
     /* Слово не помещается на первой странице, но помещается на второй */
-    alphIndex bigWord = SplitIntoPages("котик милый", 8, PageUnit::Characters);
+    PaginationResult bigWord = SplitIntoPages("котик милый", 8, PageUnit::Characters);
 
-    assert(bigWord.GetLength()    == 3);
-    assert(bigWord[0].GetLength() == 0);
-    assert(bigWord[1][0] == "котик");
-    assert(bigWord[2][0] == "милый");
+    assert(bigWord.pages.GetLength()    == 2);
+    assert(bigWord.pages[0].GetLength() == 1);
+    assert(bigWord.pages[1].GetLength() == 2);
+    assert(bigWord.pages[0][0] == "коти");
+    assert(bigWord.pages[1][0] == "к");
+    assert(bigWord.pages[1][1] == "милый");
 
     /* Слово не помещается ни на одной странице */
-    alphIndex skippedWord = SplitIntoPages("тетрагидропиранилциклопентилтетрагидропиридопиридиновые кот", 10, PageUnit::Characters);
+    PaginationResult longWord = SplitIntoPages("тетрагидропиранилциклопентилтетрагидропиридопиридиновые кот", 10, PageUnit::Characters);
 
-    assert(skippedWord.GetLength() == 1);
-    assert(skippedWord[0][0] == "кот");
+    assert(longWord.pages.GetLength() == 7);
+    assert(longWord.pages[0][0] == "тетра");
+    assert(longWord.pages[5][0] == "иридиновые");
+    assert(longWord.pages[6][0] == "кот");
 
     /* Некорректный размер страницы */
     bool exceptionPage = false; 
@@ -797,65 +803,83 @@ void AlphabeticalIndexTest() {
 void ArrayIndexTest() {
     
     /* Указатель на уже готовых страницах */
-    alphIndex pages;
-    DynamicArray<std::string> firstPage;
-    firstPage.Append("!!!PLANeT");
-    firstPage.Append("SCience!!");
-    firstPage.Append("planet"); // Повтор на той же странице
+    PaginationResult pages;
+    const int firstPage[]  = {1};
+    const int secondPage[] = {2};
+    const int thirdPage[]  = {3};
 
-    DynamicArray<std::string> secondPage;
-    secondPage.Append("ALGORITHM");
-    secondPage.Append("PlaneT");
-    secondPage.Append("algorithm");
+    pages.wordPages.Append({"!!!PLANeT", {firstPage, 1}});
+    pages.wordPages.Append({"SCience!!", {firstPage, 1}});
+    pages.wordPages.Append({"planet", {firstPage, 1}}); // Повтор на той же странице
+    pages.wordPages.Append({"ALGORITHM", {secondPage, 1}});
+    pages.wordPages.Append({"PlaneT", {secondPage, 1}});
+    pages.wordPages.Append({"algorithm", {secondPage, 1}});
+    pages.wordPages.Append({"science", {thirdPage, 1}});
+    pages.wordPages.Append({"planet!!!", {thirdPage, 1}});
 
-    DynamicArray<std::string> thirdPage;
-    thirdPage.Append("science");
-    thirdPage.Append("planet!!!");
+    /* Указатель, не зависящий от регистра */
+    ArrayIndex arrayNotDepend = BuildArrayIndex(pages.wordPages);
+
+    assert(arrayNotDepend.GetLength() == 3);  // 3 уникальных слова
+
+    assert(arrayNotDepend[0].key == "algorithm");
+    assert(arrayNotDepend[1].key == "planet"); 
+    assert(arrayNotDepend[2].key == "science");
+
+    assert(arrayNotDepend[1].value.GetLength() == 3 && arrayNotDepend[1].value[0] == 1 && arrayNotDepend[1].value[1] == 2 && arrayNotDepend[1].value[2] == 3);
+    assert(arrayNotDepend[0].value[0] == 2);
+
+    /* Указатель, не зависящий от регистра */
+    ArrayIndex arrayDepend = BuildArrayIndex(pages.wordPages, CaseMode::Depend);
+
+    assert(arrayDepend.GetLength() == 7);  // 3 уникальных слова
+
+    assert(arrayDepend[0].key == "ALGORITHM");
+    assert(arrayDepend[0].value.GetLength() == 1);
+    assert(arrayDepend[0].value[0] == 2);
     
-    pages.Append(firstPage);
-    pages.Append(secondPage);    
-    pages.Append(thirdPage);
-
-    ArrayIndex array = BuildArrayIndex(pages);
-
-    assert(array.GetLength() == 3);  // 3 уникальных слова
-
-    assert(array[0].key == "algorithm");
-    assert(array[1].key == "planet"); 
-    assert(array[2].key == "science");
-
-    assert(array[1].value.GetLength() == 3 && array[1].value[0] == 1 && array[1].value[1] == 2 && array[1].value[2] == 3);
-    assert(array[0].value[0] == 2);
+    assert(arrayDepend[1].key == "PLANeT");
+    assert(arrayDepend[1].value.GetLength() == 1);
+    assert(arrayDepend[1].value[0] == 1);
+    
+    assert(arrayDepend[2].key == "PlaneT");
+    assert(arrayDepend[2].value.GetLength() == 1);
+    assert(arrayDepend[2].value[0] == 2);
+    
+    assert(arrayDepend[3].key == "SCience");
+    assert(arrayDepend[3].value.GetLength() == 1);
+    assert(arrayDepend[3].value[0] == 1);
+    
+    assert(arrayDepend[4].key == "algorithm");
+    assert(arrayDepend[4].value.GetLength() == 1);
+    assert(arrayDepend[4].value[0] == 2);
+    
+    assert(arrayDepend[5].key == "planet");
+    assert(arrayDepend[5].value.GetLength() == 2);
+    assert(arrayDepend[5].value[0] == 1);
+    assert(arrayDepend[5].value[1] == 3);
+    
+    assert(arrayDepend[6].key == "science");
+    assert(arrayDepend[6].value.GetLength() == 1);
+    assert(arrayDepend[6].value[0] == 3);  
 
     /* Пустой массив страниц */
-    alphIndex empty; 
+    PaginationResult empty; 
 
-    ArrayIndex empty_index = BuildArrayIndex(empty);
+    ArrayIndex empty_index = BuildArrayIndex(empty.wordPages);
 
     assert(empty_index.GetLength() == 0);
 
     /* Пустые страницы */
-    alphIndex someEmptyPages; 
+    PaginationResult someEmptyPages;
+    const int second[] = {2};
+    const int fourth[] = {4};
 
-    DynamicArray<std::string> first;
+    someEmptyPages.wordPages.Append({"planet", {second, 1}});
+    someEmptyPages.wordPages.Append({"planet", {fourth, 1}});
+    someEmptyPages.wordPages.Append({"science", {fourth, 1}});
 
-    DynamicArray<std::string> second; 
-    second.Append("planet");
-
-    DynamicArray<std::string> third; 
-    
-    DynamicArray<std::string> fourth; 
-    fourth.Append("planet");
-    fourth.Append("science");
-
-    someEmptyPages.Append(first);
-    someEmptyPages.Append(second);
-    someEmptyPages.Append(third);
-    someEmptyPages.Append(fourth);
-
-    assert(someEmptyPages.GetLength() == 4);
-
-    ArrayIndex littleEmptyIndex = BuildArrayIndex(someEmptyPages);
+    ArrayIndex littleEmptyIndex = BuildArrayIndex(someEmptyPages.wordPages);
 
     assert(littleEmptyIndex.GetLength() == 2);
 
@@ -873,66 +897,68 @@ void ArrayIndexTest() {
 void HashIndexTest() {
 
     /* Указатель на уже готовых страницах */
-    alphIndex pages;
-    DynamicArray<std::string> firstPage;
-    firstPage.Append("!!!Planet");
-    firstPage.Append("??SCIENCE");
-    firstPage.Append("planet"); // Повтор на той же странице
+    PaginationResult pages;
+    const int firstPage[]  = {1};
+    const int secondPage[] = {2};
+    const int thirdPage[]  = {3};
 
-    DynamicArray<std::string> secondPage;
-    secondPage.Append("ALGorIthm");
-    secondPage.Append("PLAnet??!!");
-    secondPage.Append("algorithm");
+    pages.wordPages.Append({"!!!Planet", {firstPage, 1}});
+    pages.wordPages.Append({"??SCIENCE", {firstPage, 1}});
+    pages.wordPages.Append({"planet", {firstPage, 1}}); // Повтор на той же странице
+    pages.wordPages.Append({"ALGorIthm", {secondPage, 1}});
+    pages.wordPages.Append({"PLAnet??!!", {secondPage, 1}});
+    pages.wordPages.Append({"algorithm", {secondPage, 1}});
+    pages.wordPages.Append({"science", {thirdPage, 1}});
+    pages.wordPages.Append({"PLANET", {thirdPage, 1}});
 
-    DynamicArray<std::string> thirdPage;
-    thirdPage.Append("science");
-    thirdPage.Append("PLANET");
+    /* Указатель, не зависящий от регистра */
+    HashIndex dictionaryNotDepend = BuildHashIndex(pages.wordPages, 1);
     
-    pages.Append(firstPage);
-    pages.Append(secondPage);    
-    pages.Append(thirdPage);
+    assert(dictionaryNotDepend.GetCount() == 3);  // 3 уникальных слова
 
-    HashIndex dictionary = BuildHashIndex(pages, 1);
+    assert(dictionaryNotDepend.ContainsKey("algorithm"));
+    assert(dictionaryNotDepend.ContainsKey("planet"));
+    assert(dictionaryNotDepend.ContainsKey("science"));
+
+    assert(dictionaryNotDepend.Get("algorithm")[0] == 2);
+    assert(dictionaryNotDepend.Get("planet")[0] == 1 && dictionaryNotDepend.Get("planet")[1] == 2 && dictionaryNotDepend.Get("planet")[2] == 3);
+    assert(dictionaryNotDepend.Get("science")[0] == 1 && dictionaryNotDepend.Get("science")[1] == 3);
+
+    /* Указатель, зависящий от регистра */
+    HashIndex dictionaryDepend = BuildHashIndex(pages.wordPages, 1, CaseMode::Depend);
     
-    assert(dictionary.GetCount() == 3);  // 3 уникальных слова
+    assert(dictionaryDepend.GetCount() == 8);  // 8 уникальных слов
 
-    assert(dictionary.ContainsKey("algorithm"));
-    assert(dictionary.ContainsKey("planet"));
-    assert(dictionary.ContainsKey("science"));
+    assert(dictionaryDepend.ContainsKey("algorithm"));
+    assert(dictionaryDepend.ContainsKey("Planet"));
+    assert(dictionaryDepend.ContainsKey("SCIENCE"));
+    assert(dictionaryDepend.ContainsKey("planet"));
+    assert(dictionaryDepend.ContainsKey("science"));
+    assert(dictionaryDepend.ContainsKey("PLANET"));
+    assert(dictionaryDepend.ContainsKey("PLAnet"));
+    assert(dictionaryDepend.ContainsKey("ALGorIthm"));
 
-    assert(dictionary.Get("algorithm")[0] == 2);
-    assert(dictionary.Get("planet")[0] == 1 && dictionary.Get("planet")[1] == 2 && dictionary.Get("planet")[2] == 3);
-    assert(dictionary.Get("science")[0] == 1 && dictionary.Get("science")[1] == 3);
+    assert(dictionaryDepend.Get("algorithm")[0] == 2);
+    assert(dictionaryDepend.Get("planet")[0] == 1 && dictionaryDepend.Get("PLANET")[0] == 3 && dictionaryDepend.Get("PLAnet")[0] == 2);
+    assert(dictionaryDepend.Get("science")[0] == 3 && dictionaryDepend.Get("SCIENCE")[0] == 1);
 
     /* Пустой массив страниц */
-    alphIndex empty; 
+    PaginationResult empty; 
 
-    HashIndex empty_index = BuildHashIndex(empty, 1);
+    HashIndex empty_index = BuildHashIndex(empty.wordPages, 1);
 
     assert(empty_index.GetCount() == 0);
 
     /* Пустые страницы */
-    alphIndex someEmptyPages; 
+    PaginationResult someEmptyPages;
+    const int second[] = {2};
+    const int fourth[] = {4};
 
-    DynamicArray<std::string> first;
+    someEmptyPages.wordPages.Append({"planet", {second, 1}});
+    someEmptyPages.wordPages.Append({"planet", {fourth, 1}});
+    someEmptyPages.wordPages.Append({"science", {fourth, 1}});
 
-    DynamicArray<std::string> second; 
-    second.Append("planet");
-
-    DynamicArray<std::string> third; 
-    
-    DynamicArray<std::string> fourth; 
-    fourth.Append("planet");
-    fourth.Append("science");
-
-    someEmptyPages.Append(first);
-    someEmptyPages.Append(second);
-    someEmptyPages.Append(third);
-    someEmptyPages.Append(fourth);
-
-    assert(someEmptyPages.GetLength() == 4);
-
-    HashIndex littleEmptyIndex = BuildHashIndex(someEmptyPages, 1);
+    HashIndex littleEmptyIndex = BuildHashIndex(someEmptyPages.wordPages, 1);
 
     assert(littleEmptyIndex.GetCount() == 2);
 
@@ -948,18 +974,18 @@ void HashIndexTest() {
 
 void NormalizeWordTest() {
 
-    std::string str1 = NormalizeWord("Hello");
-    std::string str2 = NormalizeWord("!!!Hello");
-    std::string str3 = NormalizeWord("Hello!!!");
+    std::string str1 = NormalizeWord("Hello", CaseMode::NotDepend);
+    std::string str2 = NormalizeWord("!!!Hello", CaseMode::NotDepend);
+    std::string str3 = NormalizeWord("Hello!!!", CaseMode::NotDepend);
 
-    std::string str4 = NormalizeWord("Привет");
-    std::string str5 = NormalizeWord("!!!Привет!");
+    std::string str4 = NormalizeWord("Привет", CaseMode::NotDepend);
+    std::string str5 = NormalizeWord("!!!Привет!", CaseMode::NotDepend);
 
-    std::string str6 = NormalizeWord("!!!");
-    std::string str7 = NormalizeWord("кто-нибудь,");
-    std::string str8 = NormalizeWord("...HELLO!!");
+    std::string str6 = NormalizeWord("!!!", CaseMode::NotDepend);
+    std::string str7 = NormalizeWord("кто-нибудь,", CaseMode::NotDepend);
+    std::string str8 = NormalizeWord("...HELLO!!", CaseMode::Depend);
 
-    std::string str9 = NormalizeWord("");
+    std::string str9 = NormalizeWord("", CaseMode::NotDepend);
 
 
 
@@ -972,7 +998,7 @@ void NormalizeWordTest() {
 
     assert(str6 == "");
     assert(str7 == "кто-нибудь");
-    assert(str8 == "hello");
+    assert(str8 == "HELLO");
 
     assert(str9 == "");
 

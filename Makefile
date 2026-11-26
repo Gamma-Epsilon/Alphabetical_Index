@@ -1,16 +1,16 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2
-TARGET   = build/correctness_tests.exe
+TARGET   = build/run.exe
 SOURCES  = main.cpp sources/CorrectnessTests.cpp sources/AlphabeticalIndex.cpp sources/Console.cpp
 HEADERS  = $(wildcard headers/*.hpp headers/*/*.hpp sources/*/*.tpp sources/*/*.cpp)
 
-.PHONY: all test asan
+.PHONY: all run test asan
 all: $(TARGET)
 
 $(TARGET): $(SOURCES) $(HEADERS) | build
 	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET)
 
-run_correctness_test: $(TARGET)
+run: $(TARGET)
 	./$(TARGET)
 
 # Requires a compiler installation with the AddressSanitizer runtime

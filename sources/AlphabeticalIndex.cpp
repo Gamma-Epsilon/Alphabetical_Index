@@ -57,7 +57,7 @@ std::string Lower(const std::string& word) {
 }
 
 
-std::string NormalizeWord(const std::string& word) {
+std::string NormalizeWord(const std::string& word, CaseMode mode) {
     /* Удаление крайних знаков препинания */
     size_t left  = 0; 
     size_t right = word.size(); // word[right - 1] - последний байт
@@ -97,69 +97,100 @@ std::string NormalizeWord(const std::string& word) {
 
     std::string normalizedWord = word.substr(left, right - left);
 
-    /* Приведение к нижнему регистру и возврат */
-
+    /* Приведение к нижнему регистру в зависимости от флага */
+    if(mode == CaseMode::Depend) return normalizedWord;
     return Lower(normalizedWord);
 }
 
 
-DynamicArray<DynamicArray<std::string>> SplitIntoPages(const std::string& text, int pageSize, PageUnit unit) {
-    if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
+PaginationResult SplitIntoPages(const std::string& text, int pageSize, PageUnit unit) {
+    /* Минимальный pageSize = 2 */
     
-    DynamicArray<DynamicArray<std::string>> allPages;
+    if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
+
+    PaginationResult result;
     DynamicArray<std::string> wordsOnCurrentPage;
 
-    int pageNumber  = 1; 
-    int currentUsed = 0; 
-    int required    = 0;
+    int pageNumber  = 1;
+    int currentUsed = 0;
 
-    std::istringstream stream(text); // Создаем поток ввода из строки text
-    std::string word; 
+    std::istringstream stream(text);
+    std::string word;
 
-    while(stream >> word) { // Считываем символы до следующего пробела/табуляции/переноса
+    // Читаем из текста по одному целому слову
+    while(stream >> word) {
+        KeyValue<std::string, DynamicArray<int>> wordOnPages;
+        wordOnPages.key = word;
 
-        /* Сколько места займет очередное слово */
-        if(unit == PageUnit::Words)           required = 1;
-        else if(unit == PageUnit::Characters) required = CountChars(word); 
+        // Очищенное слово нужно для указателя. На страницы кладём исходный текст
+        std::string cleanedWord = NormalizeWord(word, CaseMode::Depend);
 
-        /* Если слово не помещается даже на обычной странице, то пропускаем его */
-        if(required > pageSize) continue;
+        if(unit == PageUnit::Words) {
 
-        /* Пытаемся уместить слово, пока не найдем подходящую страницу */
-        while(true) {
+            // Сохраняем текущую страницу, когда очередное слово туда уже не помещается
+            if(currentUsed >= GetPageLimit(pageNumber, pageSize)) {
+                result.pages.Append(wordsOnCurrentPage);
 
-            /* Пересчитываем required для текущей страницы */
-            if(unit == PageUnit::Words) {
-                required = 1;
-            } else {
-                required = CountChars(word);
-
-                /* Учитываем пробел перед словом */
-                if(wordsOnCurrentPage.GetLength() > 0)
-                    required++;
-            }
-
-            /* Умещается ли слово? */
-            if(required + currentUsed <= GetPageLimit(pageNumber, pageSize)) {
-                wordsOnCurrentPage.Append(word);
-                currentUsed += required;
-                break;
-            } else {
-                /* Сохраняем текущую страницу */
-                allPages.Append(wordsOnCurrentPage);
-
-                /* Переходим на новую страницу */
                 wordsOnCurrentPage = DynamicArray<std::string>();
-
                 currentUsed = 0;
-                pageNumber++;    
+                ++pageNumber;
             }
-        }
-    }
 
-    if(wordsOnCurrentPage.GetLength() > 0) allPages.Append(wordsOnCurrentPage);
-    
-    return allPages;
+            wordsOnCurrentPage.Append(word);
+            ++currentUsed;
+
+            if(!cleanedWord.empty()) wordOnPages.value.Append(pageNumber);
+
+        } else {
+            // Находим в исходном слове участок без краевой пунктуации
+            size_t wordStart = word.find(cleanedWord);
+            size_t wordEnd   = wordStart + cleanedWord.size();
+            size_t bytePosition = 0;
+
+            // Пока не разместим все символы слова на странице
+            while(bytePosition < word.size()) {
+
+                // На непустой странице между словами нужно место для пробела
+                int separator = (currentUsed > 0) ? 1 : 0;
+                int freeSpace = GetPageLimit(pageNumber, pageSize) - currentUsed - separator;
+
+                if(freeSpace <= 0) {
+                    result.pages.Append(wordsOnCurrentPage);
+
+                    wordsOnCurrentPage = DynamicArray<std::string>();
+                    currentUsed = 0;
+                    ++pageNumber;
+
+                    // Пробуем разместить остаток слова на новой странице
+                    continue;
+                }
+
+                size_t partStart = bytePosition;
+                std::string part;
+                int partLength = 0;
+
+                // Берём символы, пока на странице есть место
+                while(partLength < freeSpace && bytePosition < word.size()) {
+                    part += GetSymbol(word, bytePosition);
+                    ++partLength;
+                }
+
+                wordsOnCurrentPage.Append(part);
+                currentUsed += separator + partLength;
+
+                // Запоминаем страницу, если на ней есть часть очищенного слова
+                if(partStart < wordEnd && wordStart < bytePosition) wordOnPages.value.Append(pageNumber);
+            }
+        } /* else */
+
+        // Сохраняем для построителя целое слово и номера его страниц
+        if(wordOnPages.value.GetLength() > 0) result.wordPages.Append(wordOnPages);
+    } /* first while */
+
+    // Сохраняем последнюю страницу, оставшуюся после цикла
+    if(wordsOnCurrentPage.GetLength() > 0) result.pages.Append(wordsOnCurrentPage);
+
+    return result;
 }
 
 
@@ -179,29 +210,48 @@ int CountChars(const std::string& word) {
     return length;
 }
 
+/* Возврат одного символа */
+std::string GetSymbol(std::string& word, size_t& bytePosition) {
+    if (bytePosition >= word.size()) return "";
+
+    const size_t symbolStart = bytePosition;
+    ++bytePosition;
+
+    while(bytePosition < word.size() &&
+           (static_cast<unsigned char>(word[bytePosition]) & 0xC0) == 0x80) ++bytePosition;
+
+
+    return word.substr(symbolStart, bytePosition - symbolStart);
+}
+
 
 /* Создание указателя на основе массива */
-ArrayIndex BuildArrayIndex(const DynamicArray<DynamicArray<std::string>>& pages) {
+ArrayIndex BuildArrayIndex(const DynamicArray<KeyValue<std::string, DynamicArray<int>>>& pages, CaseMode mode) {
     ArrayIndex array; 
 
-    for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
-        for(int j = 0; j < pages[i].GetLength(); j++) {
-            KeyValue<std::string, DynamicArray<int>> word; 
-            word.key = NormalizeWord(pages[i][j]); 
+    for(int i = 0; i < pages.GetLength(); ++i) {
+        KeyValue<std::string, DynamicArray<int>> word;
+        word.key = NormalizeWord(pages[i].key, mode);
 
-            int indx       = array.Index(word, SearchMode::Half);
-            int pageNumber = i + 1; // Т.к страницы с единицы
+        if(word.key.empty()) continue;
 
-            if(indx != -1) {
-                DynamicArray<int>& numbers = array[indx].value;
+        int index = array.Index(word, SearchMode::Half);
 
-                // Страницы в порядке возрастания
-                if(numbers.GetLength() == 0 || numbers[numbers.GetLength() - 1] != pageNumber) numbers.Append(pageNumber); 
-            } else {
-                word.value.Append(pageNumber);
-                array.Add(word);
-            }
-        }   
+        // Слово встретилось впервые. Добавляем сразу все его страницы
+        if(index == -1) {
+            word.value = pages[i].value;
+            array.Add(word);
+            continue;
+        }
+
+        // Слово уже есть. Дополняем список страниц в существующей записи
+        DynamicArray<int>& pageNumbers = array[index].value;
+
+        for(int j = 0; j < pages[i].value.GetLength(); ++j) {
+            int pageNumber = pages[i].value[j];
+    
+            if(pageNumbers.GetLast() != pageNumber) pageNumbers.Append(pageNumber);
+        }
     }
 
     return array;
@@ -209,23 +259,27 @@ ArrayIndex BuildArrayIndex(const DynamicArray<DynamicArray<std::string>>& pages)
 
 
 /* Создание указателя на основе хеш-таблицы */
-HashIndex BuildHashIndex(const DynamicArray<DynamicArray<std::string>>& pages, int bucketCount) {
+HashIndex BuildHashIndex(const DynamicArray<KeyValue<std::string, DynamicArray<int>>>& pages, int bucketCount, CaseMode mode) {
     HashIndex dictionary(bucketCount); 
 
-    for(int i = 0; i < pages.GetLength(); i++) {    /* i - страница */
-        for(int j = 0; j < pages[i].GetLength(); j++) {
-            int pageNumber = i + 1; 
-            const std::string& word = NormalizeWord(pages[i][j]); 
+    for(int i = 0; i < pages.GetLength(); ++i) {
+        std::string word = NormalizeWord(pages[i].key, mode);
+        if(word.empty()) continue;
 
-            if(dictionary.ContainsKey(word)) {
-                DynamicArray<int>& numbers = dictionary.Get(word);
-                if(numbers.GetLength() == 0 || numbers[numbers.GetLength() - 1] != pageNumber) numbers.Append(pageNumber); 
-            } else {
-                DynamicArray<int> numbers; 
-                numbers.Append(pageNumber);
-                dictionary.Add(word, numbers);
-            }
-        }   
+        // Слово встретилось впервые. Добавляем сразу все его страницы
+        if(!dictionary.ContainsKey(word)) {
+            dictionary.Add(word, pages[i].value);
+            continue;
+        }
+
+        // Слово уже есть. Дополняем список страниц по его ключу
+        DynamicArray<int>& pageNumbers = dictionary.Get(word);
+
+        for(int j = 0; j < pages[i].value.GetLength(); ++j) {
+            int pageNumber = pages[i].value[j];
+            
+            if(pageNumbers.GetLast() != pageNumber) pageNumbers.Append(pageNumber);
+        }
     }
 
     return dictionary;

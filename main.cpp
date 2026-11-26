@@ -4,7 +4,6 @@
 #include "headers/PerformanceTests.hpp"
 #include "headers/Console.hpp"
 
-using alphIndex = DynamicArray<DynamicArray<std::string>>;
 using Dict      = HashDictionary<std::string, int>;
 using Entry     = KeyValue<std::string, DynamicArray<int>>;
 
@@ -34,7 +33,7 @@ int main() {
         std::string text;     
         std::string separation; 
         int pageSize; 
-        alphIndex pages;    
+        PaginationResult result;
         
         int indexChoice;
         int bucketCount;
@@ -52,13 +51,13 @@ int main() {
                 std::cout << "Введите количество символов на стандартной странице: ";
                 std::cin  >> pageSize; 
 
-                pages = SplitIntoPages(text, pageSize, PageUnit::Characters);
+                result = SplitIntoPages(text, pageSize, PageUnit::Characters);
 
             } else if(separation == "слово") {
                 std::cout << "Введите количество слов на стандартной странице: ";
                 std::cin  >> pageSize; 
 
-                pages = SplitIntoPages(text, pageSize, PageUnit::Words);
+                result = SplitIntoPages(text, pageSize, PageUnit::Words);
 
             } else {
                 std::cout << "Неверный вид разбиения.\n";
@@ -69,10 +68,10 @@ int main() {
 
             std::cout << "Введенный текст разбит на страницы!\n";
 
-            for(int i = 0; i < pages.GetLength(); i++) {
+            for(int i = 0; i < result.pages.GetLength(); i++) {
                 std::cout << "Страница [" << (i + 1) << "]: ";
-                for(int j = 0; j < pages[i].GetLength(); j++){
-                    std::cout << pages[i][j] << " ";
+                for(int j = 0; j < result.pages[i].GetLength(); j++){
+                    std::cout << result.pages[i][j] << " ";
                 }
                 std::cout << "\n";
             }
@@ -81,8 +80,8 @@ int main() {
 
             std::cout << "Выберите вид указателя:\n"
                       << "1) Отсортированный массив\n"
-                      << "2) Хеш-таблица\n";
-            std::cout << "Ваш выбор: ";
+                      << "2) Хеш-таблица\n"
+                      << "Ваш выбор: ";
             if(!(std::cin >> indexChoice)) {
                 ClearInputBuffer();
                 std::cout << "Неверный ввод.\n";
@@ -90,14 +89,28 @@ int main() {
                 continue;
             }
 
+            std::cout << "1) Без учета регистра\n"
+                      << "2) С учетом регистра\n"
+                      << "Ваш выбор: ";
+            int caseChoice;
+            if (!(std::cin >> caseChoice) || (caseChoice != 1 && caseChoice != 2)) {
+                std::cout << "Неверный режим регистра.\n";
+                ClearInputBuffer();
+                WaitingForEnter();
+                continue;
+            }
+            CaseMode mode;
+            if(caseChoice == 1) mode = CaseMode::NotDepend;
+            else mode = CaseMode::Depend;
+
             if(indexChoice == 1) {
-                ArrayIndex array = BuildArrayIndex(pages);
+                ArrayIndex array = BuildArrayIndex(result.wordPages, mode);
                 std::cout << "Указатель построен!\n";
 
                 for(int i = 0; i < array.GetLength(); i++) {
                     std::cout << "Слово [" << (i + 1) << "]: " << array[i].key << ": {";
                     for(int j = 0; j < array[i].value.GetLength(); j++) {
-                        std::cout << array[i].value[j];
+                        std::cout << array[i].value[j] << " ";
                     }
                     std::cout << "}\n";
                 }
@@ -112,7 +125,7 @@ int main() {
                     WaitingForEnter();
                     continue;
                 }
-                HashIndex dict = BuildHashIndex(pages, bucketCount);
+                HashIndex dict = BuildHashIndex(result.wordPages, bucketCount, mode);
 
                 auto iterator = dict.GetIterator(); 
 
