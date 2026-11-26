@@ -32,11 +32,15 @@ int main() {
 
         std::string text;     
         std::string separation; 
+
         int pageSize; 
+        PageUnit unit; 
+
         PaginationResult result;
         
         int indexChoice;
         int bucketCount;
+
         switch (main_choice) {
 
         case 1: 
@@ -47,24 +51,24 @@ int main() {
             std::cout << "Введите способ разбиения ('символ' или 'слово')): ";
             std::cin  >> separation;
 
-            if(separation == "символ") {
-                std::cout << "Введите количество символов на стандартной странице: ";
-                std::cin  >> pageSize; 
-
-                result = SplitIntoPages(text, pageSize, PageUnit::Characters);
-
-            } else if(separation == "слово") {
-                std::cout << "Введите количество слов на стандартной странице: ";
-                std::cin  >> pageSize; 
-
-                result = SplitIntoPages(text, pageSize, PageUnit::Words);
-
-            } else {
+            if(separation == "символ")     unit = PageUnit::Characters;
+            else if(separation == "слово") unit = PageUnit::Words;
+            else {
                 std::cout << "Неверный вид разбиения.\n";
                 ClearInputBuffer();
-                WaitingForEnter();    
-                break;            
+                WaitingForEnter();
+                break;
             }
+
+            std::cout << "Введите размер стандартной страницы (минимум 2): ";
+            if(!(std::cin >> pageSize) || pageSize < 2) {
+                std::cout << "Укажи целое число не меньше 2.\n";
+                ClearInputBuffer();
+                WaitingForEnter();
+                break;
+            }
+
+            result = SplitIntoPages(text, pageSize, unit);
 
             std::cout << "Введенный текст разбит на страницы!\n";
 

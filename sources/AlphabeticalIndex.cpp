@@ -13,7 +13,7 @@ static const std::string lower_rus = "абвгдеёжзийклмнопрсту
 static const std::string UPPER_RUS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
 int GetPageLimit(int pageNumber, int pageSize) {
-    if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
+    if(pageSize < 2) throw SizeIsIncorrect("AlphabeticalIndex - Page size must be at least 2");
     
     if(pageNumber == 1)      return pageSize / 2;
     if(pageNumber % 10 == 0) return pageSize * 3/4;
@@ -23,37 +23,23 @@ int GetPageLimit(int pageNumber, int pageSize) {
 
 
 std::string Lower(const std::string& word) {
-    /* Приведение к нижнему регистру */
-    std::string result; 
+    std::string result;
+    size_t bytePosition = 0;
 
-    size_t i = 0;
-    while(i < word.size()) {
-        char c = word[i];
+    while(bytePosition < word.size()) {
+        std::string symbol = GetSymbol(word, bytePosition);
 
-        if(c >= 'A' && c <= 'Z') {  // Если буква английская
-            char end_lower = c + ('a' - 'A');
-
-            result += end_lower;
-            i += 1;
-        } else if(i + 1 < word.size()) { // Если есть еще один байт (буква, возможно, русская)
-            std::string rus  = word.substr(i, 2);
-            size_t rus_upper = UPPER_RUS.find(rus);
-            
-            if(rus_upper != std::string::npos) {
-                std::string rus_lower = lower_rus.substr(rus_upper, 2);
-                result += rus_lower;
-                i += 2;
-            } else {
-                result += c; 
-                i += 1;
-            }
-        } else {
-            result += c;
-            i += 1;
+        if(symbol.size() == 1 && symbol[0] >= 'A' && symbol[0] <= 'Z') {
+            symbol[0] += 'a' - 'A';
+        } else if(symbol.size() == 2) {
+            size_t position = UPPER_RUS.find(symbol);
+            if(position != std::string::npos) symbol = lower_rus.substr(position, 2);
         }
+
+        result += symbol;
     }
 
-    return result; 
+    return result;
 }
 
 
@@ -106,7 +92,7 @@ std::string NormalizeWord(const std::string& word, CaseMode mode) {
 PaginationResult SplitIntoPages(const std::string& text, int pageSize, PageUnit unit) {
     /* Минимальный pageSize = 2 */
     
-    if(pageSize <= 0) throw SizeIsNegative("AlphabeticalIndex - Page size should be positive");
+    if(pageSize < 2) throw SizeIsIncorrect("AlphabeticalIndex - Page size must be at least 2");
 
     PaginationResult result;
     DynamicArray<std::string> wordsOnCurrentPage;
@@ -211,7 +197,7 @@ int CountChars(const std::string& word) {
 }
 
 /* Возврат одного символа */
-std::string GetSymbol(std::string& word, size_t& bytePosition) {
+std::string GetSymbol(const std::string& word, size_t& bytePosition) {
     if (bytePosition >= word.size()) return "";
 
     const size_t symbolStart = bytePosition;

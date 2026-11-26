@@ -49,7 +49,7 @@ PaginationResult SplitIntoPages(const std::string& text, int pageSize, PageUnit 
 int CountChars(const std::string& word);
 
 /* Получение символа слова */
-std::string GetSymbol(std::string& word, size_t& bytePosition);
+std::string GetSymbol(const std::string& word, size_t& bytePosition);
 
 /* Создание указателя на основе массива */
 ArrayIndex BuildArrayIndex(const DynamicArray<KeyValue<std::string, DynamicArray<int>>>& pages, CaseMode mode = CaseMode::NotDepend);

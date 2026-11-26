@@ -60,13 +60,13 @@ public:
 };
 
 
-class SizeIsNegative : public std::exception {
+class SizeIsIncorrect : public std::exception {
 private:
     std::string message;
 public:
     /* Конструкторы */
-    SizeIsNegative() : message("The key already is in a dictionary") {}
-    explicit SizeIsNegative(const std::string& msg) : message(msg) {} 
+    SizeIsIncorrect() : message("The key already is in a dictionary") {}
+    explicit SizeIsIncorrect(const std::string& msg) : message(msg) {} 
     
     const char* what() const noexcept override {
         return message.c_str(); // Возвращение текстового сообщения об ошибке

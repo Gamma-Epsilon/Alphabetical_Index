@@ -766,7 +766,7 @@ void AlphabeticalIndexTest() {
 
     assert(empty.pages.GetLength() == 0);
 
-    /* Слово не помещается на первой странице, но помещается на второй */
+    /* Слово разделяется по страницам */
     PaginationResult bigWord = SplitIntoPages("котик милый", 8, PageUnit::Characters);
 
     assert(bigWord.pages.GetLength()    == 2);
@@ -776,7 +776,6 @@ void AlphabeticalIndexTest() {
     assert(bigWord.pages[1][0] == "к");
     assert(bigWord.pages[1][1] == "милый");
 
-    /* Слово не помещается ни на одной странице */
     PaginationResult longWord = SplitIntoPages("тетрагидропиранилциклопентилтетрагидропиридопиридиновые кот", 10, PageUnit::Characters);
 
     assert(longWord.pages.GetLength() == 7);
@@ -789,7 +788,7 @@ void AlphabeticalIndexTest() {
 
     try {
         SplitIntoPages("I LOVE YOU", 0, PageUnit::Words);
-    } catch(const SizeIsNegative&) {
+    } catch(const SizeIsIncorrect&) {
         exceptionPage = true;
     }
 
@@ -807,7 +806,7 @@ void ArrayIndexTest() {
     const int firstPage[]  = {1};
     const int secondPage[] = {2};
     const int thirdPage[]  = {3};
-
+    
     pages.wordPages.Append({"!!!PLANeT", {firstPage, 1}});
     pages.wordPages.Append({"SCience!!", {firstPage, 1}});
     pages.wordPages.Append({"planet", {firstPage, 1}}); // Повтор на той же странице
@@ -987,7 +986,8 @@ void NormalizeWordTest() {
 
     std::string str9 = NormalizeWord("", CaseMode::NotDepend);
 
-
+    std::string str10 = NormalizeWord("Кот–Пёс", CaseMode::NotDepend); 
+    std::string str11 = NormalizeWord("Кот–Пёс", CaseMode::Depend);
 
     assert(str1 == "hello");
     assert(str2 == "hello");
@@ -1001,6 +1001,9 @@ void NormalizeWordTest() {
     assert(str8 == "HELLO");
 
     assert(str9 == "");
+
+    assert(str10 == "кот–пёс");
+    assert(str11 == "Кот–Пёс");
 
     std::cout << std::left << std::setw(totalWidth - 4) << "NormalizeWordTest:" << "[OK]" << std::endl;
 }
