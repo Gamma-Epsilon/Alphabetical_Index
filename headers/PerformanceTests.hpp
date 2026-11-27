@@ -1,7 +1,0 @@
-#ifndef PERFORMANCE_TESTS_HPP
-#define PERFORMANCE_TESTS_HPP
-
-
-
-
-#endif /* PERFORMANCE_TESTS_HPP */

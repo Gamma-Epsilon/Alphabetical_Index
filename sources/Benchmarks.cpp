@@ -1,0 +1,5 @@
+#ifndef BENCHMARKS_CPP
+#define BENCHMARKS_CPP
+
+
+#endif /* BENCHMARKS_CPP */

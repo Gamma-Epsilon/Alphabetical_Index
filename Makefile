@@ -1,7 +1,7 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2
 TARGET   = build/run.exe
-SOURCES  = main.cpp sources/CorrectnessTests.cpp sources/AlphabeticalIndex.cpp sources/Console.cpp
+SOURCES  = main.cpp sources/CorrectnessTests.cpp sources/AlphabeticalIndex.cpp
 HEADERS  = $(wildcard headers/*.hpp headers/*/*.hpp sources/*/*.tpp sources/*/*.cpp)
 
 .PHONY: all run test asan

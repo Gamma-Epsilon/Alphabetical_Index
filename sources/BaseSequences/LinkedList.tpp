@@ -9,8 +9,8 @@
 /* СОЗДАНИЕ */
 template <class T>
 LinkedList<T>::LinkedList(const T* items, const int count) : LinkedList() {
-    if(count < 0) throw IndexOutOfRange("LinkedList::LinkedList - negative count.");
-    if(count > 0 && items == nullptr) throw std::invalid_argument("LinkedList - null items.");
+    if(count < 0)                     throw IndexOutOfRange("LinkedList::LinkedList - negative count.");
+    if(count > 0 && items == nullptr) throw InvalidArgument("LinkedList - null items.");
 
     for(int i = 0; i < count; i++) Append(items[i]);
 }

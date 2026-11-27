@@ -1,11 +1,11 @@
-#ifndef SORTED_SEQUENCE_HPP
-#define SORTED_SEQUENCE_HPP
+#ifndef SORTED_ARRAY_HPP
+#define SORTED_ARRAY_HPP
 
 #include "ISortedSequence.hpp"
 #include "../BaseSequences/DynamicArray.hpp"
 
 template <class T>
-class SortedSequence : public ISortedSequence<T> {
+class SortedArray : public ISortedSequence<T> {
 private:
     DynamicArray<T> data;
 
@@ -13,19 +13,19 @@ private:
     int LowerBound(const T& item, SearchMode mode) const;
 public: 
     /* Создание объекта */
-    SortedSequence();
-    SortedSequence(const DynamicArray<T>& items);            
+    SortedArray();
+    SortedArray(const DynamicArray<T>& items);            
 
     /* Копирование */
-    SortedSequence(const SortedSequence<T>& sortedSequence)      = default; 
-    SortedSequence<T>& operator=(const SortedSequence<T>& other) = default;
+    SortedArray(const SortedArray<T>& sortedArray)      = default; 
+    SortedArray<T>& operator=(const SortedArray<T>& other) = default;
 
     /* Перемещение */
-    SortedSequence(SortedSequence<T>&& other)               noexcept = default;
-    SortedSequence<T>& operator=(SortedSequence<T>&& other) noexcept = default;
+    SortedArray(SortedArray<T>&& other)               noexcept = default;
+    SortedArray<T>& operator=(SortedArray<T>&& other) noexcept = default;
 
     /* Удаление объекта */
-    ~SortedSequence() = default; 
+    ~SortedArray() = default; 
 
     /* Доступ к существующим элементам */
     const T& operator[](int index) const override;
@@ -39,6 +39,6 @@ public:
     void Add(const T& item)    override;
 };
 
-#include "../../sources/ComplexSequences/SortedSequence.tpp"
+#include "../../sources/ComplexSequences/SortedArray.tpp"
 
-#endif /* SORTED_SEQUENCE_HPP */
+#endif /* SORTED_ARRAY_HPP */

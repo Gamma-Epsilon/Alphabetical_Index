@@ -522,8 +522,8 @@ void KeyValueTest() {
 
   
 /* Отсортированный массив */
-void SortedSequenceTest() {
-    SortedSequence<int> sorted;
+void SortedArrayTest() {
+    SortedArray<int> sorted;
 
     /* Добавление элементов */
     sorted.Add(5); 
@@ -546,26 +546,26 @@ void SortedSequenceTest() {
     assert(indx4 == -1);
 
     /* Копирование */
-    SortedSequence<int> copied(sorted);
+    SortedArray<int> copied(sorted);
 
     copied.Add(0);
 
     assert(copied[0] == 0 && sorted[0] == 1);
 
     /* Перемещение */
-    SortedSequence<int> moved(std::move(sorted));
+    SortedArray<int> moved(std::move(sorted));
 
     assert(sorted.GetLength() == 0 && moved.GetLength() == 5);
 
     /* Последовательность из неотсортированного массива */
     int arr[5] = {3, 2, 1};
     DynamicArray<int>   array(arr, 3);
-    SortedSequence<int> sorted_array(array);
+    SortedArray<int> sorted_array(array);
 
     assert(sorted_array[0] == 1 && sorted_array[1] == 2 && sorted_array[2] == 3);
 
     /* Проверка с KeyValue */
-    SortedSequence<Entry> sortedWords;
+    SortedArray<Entry> sortedWords;
 
     Entry first; 
     first.key = "science";
@@ -603,7 +603,7 @@ void SortedSequenceTest() {
     assert(indx6 == -1);
 
     /* Проверка бинарного поиска с золотым сечением */
-    SortedSequence<int> sortedGolden;
+    SortedArray<int> sortedGolden;
 
     sortedGolden.Add(10);
     sortedGolden.Add(20);
@@ -618,7 +618,7 @@ void SortedSequenceTest() {
     assert(sortedGolden.Index(5, SearchMode::Golden) == -1);
     assert(sortedGolden.Index(60, SearchMode::Golden) == -1);
 
-    std::cout << std::left << std::setw(totalWidth - 4) << "SortedSequenceTest:" << "[OK]" << std::endl;
+    std::cout << std::left << std::setw(totalWidth - 4) << "SortedArrayTest:" << "[OK]" << std::endl;
 }
 
 
@@ -1023,7 +1023,7 @@ int RunAllCorrectnessTests() {
 
     KeyValueTest();
 
-    SortedSequenceTest();
+    SortedArrayTest();
 
     HashDictionaryTest();
 

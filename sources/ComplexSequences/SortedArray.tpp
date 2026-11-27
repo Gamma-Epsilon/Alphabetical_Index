@@ -1,35 +1,35 @@
-#ifndef SORTED_SEQUENCE_TPP
-#define SORTED_SEQUENCE_TPP
+#ifndef SORTED_ARRAY_TPP
+#define SORTED_ARRAY_TPP
 
-#include "../../headers/ComplexSequences/SortedSequence.hpp"
+#include "../../headers/ComplexSequences/SortedArray.hpp"
 
 static const double GOLDEN_RATIO = 0.61803398875; // Коэффициент золотого сечения
 
 /* Создание объекта */
 template <class T> 
-SortedSequence<T>::SortedSequence() : data() {}
+SortedArray<T>::SortedArray() : data() {}
 
 template <class T> 
-SortedSequence<T>::SortedSequence(const DynamicArray<T>& items) : data() {
+SortedArray<T>::SortedArray(const DynamicArray<T>& items) : data() {
     for(int i = 0; i < items.GetLength(); i++) { Add(items[i]); }
 }
 
 
 /* Доступ к существующим элементам */
 template <class T> 
-const T& SortedSequence<T>::operator[](int index) const {
+const T& SortedArray<T>::operator[](int index) const {
     return data[index];
 }
 
 /* Пожалуйста, не изменяйте ключи, иначе сортировки не будет. Перегрузка нужна для построения алфавитного указателя */
 template <class T> 
-T& SortedSequence<T>::operator[](int index) {
+T& SortedArray<T>::operator[](int index) {
     return data[index];
 }
 
 /* Операции */
 template <class T> 
-int SortedSequence<T>::LowerBound(const T& item, SearchMode mode) const {
+int SortedArray<T>::LowerBound(const T& item, SearchMode mode) const {
     int left  = 0; 
     int right = data.GetLength(); // Вставить можно и после последнего элемента
     
@@ -49,18 +49,18 @@ int SortedSequence<T>::LowerBound(const T& item, SearchMode mode) const {
 }
 
 template <class T> 
-int SortedSequence<T>::GetLength() const { return data.GetLength(); }
+int SortedArray<T>::GetLength() const { return data.GetLength(); }
 
 /* Вставка в отсортированном порядке (бинарная вставка) */
 template <class T> 
-void SortedSequence<T>::Add(const T& item) {
+void SortedArray<T>::Add(const T& item) {
     int index = LowerBound(item, SearchMode::Half);
     data.InsertAt(item, index);
 }
 
 /* Бинарный поиск O(logn) */
 template <class T> 
-int SortedSequence<T>::Index(const T& item, SearchMode mode) const {
+int SortedArray<T>::Index(const T& item, SearchMode mode) const {
     int index = LowerBound(item, mode);
 
     if(index >= 0 && index <= data.GetLength() - 1) {
@@ -70,4 +70,4 @@ int SortedSequence<T>::Index(const T& item, SearchMode mode) const {
     return -1; 
 }
 
-#endif /* SORTED_SEQUENCE_TPP */
+#endif /* SORTED_ARRAY_TPP */

@@ -18,6 +18,20 @@ public:
 };
 
 
+class InvalidArgument : public std::exception {
+private:
+    std::string message;
+public:
+    /* Конструкторы */
+    InvalidArgument() : message("Index out of range") {}
+    explicit InvalidArgument(const std::string& msg) : message(msg) {} 
+    
+    const char* what() const noexcept override {
+        return message.c_str(); // Возвращение текстового сообщения об ошибке
+    }
+};
+
+
 class KeyDoesNotExist : public std::exception {
 private:
     std::string message;

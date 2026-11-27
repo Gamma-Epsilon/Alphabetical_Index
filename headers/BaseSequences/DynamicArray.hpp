@@ -45,7 +45,7 @@ public:
     void Resize(const int newSize);      // Изменить кол-во элементов
     void Reserve(const int newCapacity); // Изменить общий размер
 
-    void Append(const T& item) override;
+    void Append(const T& item)  override;
     void Prepend(const T& item) override;
     void InsertAt(const T& item, const int index) override;
     void RemoveAt(const int index) override;

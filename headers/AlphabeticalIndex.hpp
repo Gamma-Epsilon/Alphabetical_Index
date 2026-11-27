@@ -5,12 +5,12 @@
 #include <string> 
 
 #include "BaseSequences/DynamicArray.hpp"
-#include "ComplexSequences/SortedSequence.hpp"
+#include "ComplexSequences/SortedArray.hpp"
 #include "Dictionary/HashDictionary.hpp"
 #include "KeyValue.hpp"
 #include "Exceptions.hpp"
 
-using ArrayIndex = SortedSequence<KeyValue<std::string, DynamicArray<int>>>;
+using ArrayIndex = SortedArray<KeyValue<std::string, DynamicArray<int>>>;
 using HashIndex  = HashDictionary<std::string, DynamicArray<int>>;
 
 /* Для возможности разбиения по кол-ву символов или слов */

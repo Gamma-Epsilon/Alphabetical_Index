@@ -14,7 +14,7 @@
 
 #include "KeyValue.hpp"
 
-#include "ComplexSequences/SortedSequence.hpp"
+#include "ComplexSequences/SortedArray.hpp"
 
 #include "Dictionary/HashDictionary.hpp"
 
@@ -38,7 +38,7 @@ void HashIteratorTest();
 void KeyValueTest();
 
 /* Отсортированный массив */
-void SortedSequenceTest();
+void SortedArrayTest();
 
 /* Hash-словарь */
 void HashDictionaryTest();
