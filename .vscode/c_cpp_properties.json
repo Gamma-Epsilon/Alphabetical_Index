@@ -2,6 +2,9 @@
     "configurations": [
         {
             "name": "Win32",
+            "compileCommands": [
+                "${workspaceFolder}/build/gui-vscode/compile_commands.json"  // Для файлов GUI IntelliSense возьмёт пути к Qt и ui_mainwindow.h из параметров сборки
+            ],
             "includePath": [
                 "${workspaceFolder}/**"
             ],

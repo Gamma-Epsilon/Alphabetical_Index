@@ -6,8 +6,8 @@
 #include "headers/CorrectnessTests.hpp"
 #include "headers/Benchmarks.hpp"
 
-using Dict      = HashDictionary<std::string, int>;
-using Entry     = KeyValue<std::string, DynamicArray<int>>;
+using Dict  = HashDictionary<std::string, int>;
+using Entry = KeyValue<std::string, DynamicArray<int>>;
 
 /* Очистка консоли */
 static void ClearScreen() {

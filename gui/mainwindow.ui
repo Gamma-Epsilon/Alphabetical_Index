@@ -13,9 +13,268 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="mainLayout" rowstretch="1,0,2" columnstretch="1,1">
+    <item row="0" column="0" colspan="2">
+     <widget class="QPlainTextEdit" name="inputText"/>
+    </item>
+    <item row="1" column="0">
+     <layout class="QFormLayout" name="paginationSettingsLayout">
+      <property name="rowWrapPolicy">
+       <enum>QFormLayout::WrapAllRows</enum>
+      </property>
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="pageSizeLabel">
+        <property name="text">
+         <string>Размер страницы</string>
+        </property>
+        <property name="buddy">
+         <cstring>pageSizeSpinBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="pageSizeSpinBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+        </property>
+        <property name="minimum">
+         <number>2</number>
+        </property>
+        <property name="maximum">
+         <number>2147483647</number>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="pageUnitLabel">
+        <property name="text">
+         <string>Единица разбиения</string>
+        </property>
+        <property name="buddy">
+         <cstring>pageUnitComboBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="pageUnitComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+        </property>
+        <item>
+         <property name="text">
+          <string>Слова</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Символы</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="1">
+     <layout class="QFormLayout" name="indexSettingsLayout">
+      <property name="rowWrapPolicy">
+       <enum>QFormLayout::WrapAllRows</enum>
+      </property>
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="indexTypeLabel">
+        <property name="text">
+         <string>Структура указателя</string>
+        </property>
+        <property name="buddy">
+         <cstring>indexTypeComboBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="indexTypeComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+        </property>
+        <item>
+         <property name="text">
+          <string>Отсортированный массив</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Хеш-таблица</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="bucketCountLabel">
+        <property name="text">
+         <string>Число корзин</string>
+        </property>
+        <property name="buddy">
+         <cstring>bucketCountInput</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="bucketCountInput">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+        </property>
+        <property name="placeholderText">
+         <string>Положительное целое число</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QVBoxLayout" name="pagesLayout" stretch="0,1">
+      <item>
+       <widget class="QPushButton" name="splitButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed"/>
+        </property>
+        <property name="text">
+         <string>Разбить на страницы</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="pagesOutput">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="1">
+     <layout class="QVBoxLayout" name="indexLayout" stretch="0,0,0,1">
+      <item>
+       <widget class="QLineEdit" name="searchWordInput">
+        <property name="placeholderText">
+         <string>Введите одно слово</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="caseSensitiveCheckBox">
+        <property name="text">
+         <string>Учитывать регистр</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="searchOutput">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>56</height>
+         </size>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Результат поиска</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="indexTable">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <column>
+         <property name="text">
+          <string>Слово</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Страницы</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <widget class="QMenu" name="menuManualInput">
+    <property name="title">
+     <string>Ручной ввод</string>
+    </property>
+    <addaction name="actionEnterText"/>
+    <addaction name="actionSplitPages"/>
+    <addaction name="actionShowPages"/>
+    <addaction name="actionBuildIndexes"/>
+    <addaction name="actionShowIndex"/>
+    <addaction name="actionFindWord"/>
+   </widget>
+   <widget class="QMenu" name="menuBenchmarks">
+    <property name="title">
+     <string>Бенчмарки</string>
+    </property>
+    <addaction name="actionRunBenchmarks"/>
+    <addaction name="actionShowBenchmarkResults"/>
+   </widget>
+   <addaction name="menuManualInput"/>
+   <addaction name="menuBenchmarks"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionEnterText">
+   <property name="text">
+    <string>Ввести текст</string>
+   </property>
+  </action>
+  <action name="actionSplitPages">
+   <property name="text">
+    <string>Разбить на страницы</string>
+   </property>
+  </action>
+  <action name="actionShowPages">
+   <property name="text">
+    <string>Показать страницы</string>
+   </property>
+  </action>
+  <action name="actionBuildIndexes">
+   <property name="text">
+    <string>Построить указатели</string>
+   </property>
+  </action>
+  <action name="actionShowIndex">
+   <property name="text">
+    <string>Показать указатель</string>
+   </property>
+  </action>
+  <action name="actionFindWord">
+   <property name="text">
+    <string>Найти слово</string>
+   </property>
+  </action>
+  <action name="actionRunBenchmarks">
+   <property name="text">
+    <string>Запустить замеры</string>
+   </property>
+  </action>
+  <action name="actionShowBenchmarkResults">
+   <property name="text">
+    <string>Показать таблицу времени</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

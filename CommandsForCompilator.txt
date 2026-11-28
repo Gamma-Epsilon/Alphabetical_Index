@@ -1,0 +1,61 @@
+> Первичное определение переменных Qt/компиляторов и файлов, когда каталог build/gui-vscode еще не настроен или был удален: 
+
+"""
+
+$qt = "C:\Qt\6.12.1\mingw_64"
+$mingw = "C:\Qt\Tools\mingw1510_64\bin"
+$cmake = "C:\Qt\Tools\CMake_64\bin\cmake.exe"
+
+$env:Path = "$qt\bin;$mingw;$env:Path"
+$env:QT_PLUGIN_PATH = "$qt\plugins"
+
+& $cmake -S . -B build/gui-vscode -G "MinGW Makefiles" `    // нужна для первоначальной настройки каталога сборки. CMake читает CMakeLists.txt, создаёт Makefile и сохраняет пути к Qt и MinGW в CMakeCache.txt
+    "-DCMAKE_PREFIX_PATH=$qt" `
+    "-DCMAKE_CXX_COMPILER=$mingw\g++.exe" `
+    "-DCMAKE_MAKE_PROGRAM=$mingw\mingw32-make.exe"
+
+& $cmake --build build/gui-vscode
+& ".\build\gui-vscode\alphabetical_index_gui.exe"
+
+"""
+
+> Если терминал новый: 
+
+"""
+
+$qt = "C:\Qt\6.12.1\mingw_64"
+$mingw = "C:\Qt\Tools\mingw1510_64\bin"
+$cmake = "C:\Qt\Tools\CMake_64\bin\cmake.exe"
+
+$env:Path = "$qt\bin;$mingw;$env:Path"
+$env:QT_PLUGIN_PATH = "$qt\plugins"
+
+"""
+
+
+Код Qt генерируется во время сборки. 
+Сгенерированный Makefile запускает uic для mainwindow.ui и moc для класса с Q_OBJECT. 
+Их результаты лежат в build/gui-vscode/alphabetical_index_gui_autogen, а готовый .exe — в build/gui-vscode
+
+
+> В уже готовой сборке: 
+
+"""
+
+& $cmake --build build/gui-vscode                    // соберать проект в уже настроенном каталоге build/gui-vscode
+& ".\build\gui-vscode\alphabetical_index_gui.exe"
+
+"""
+
+
+Как собирается GUI без Qt Creator:
+1. cmake -S . -B build/gui-vscode читает корневой CMakeLists.txt, находит Qt и MinGW и генерирует отдельный Makefile в build/gui-vscode.
+2. cmake --build build/gui-vscode запускает этот Makefile. Qt-инструмент uic превращает mainwindow.ui в заголовок ui_mainwindow.h с функцией setupUi(). Инструмент moc генерирует код метаобъекта для MainWindow, где используется Q_OBJECT.
+3. MinGW компилирует код GUI, сгенерированный код Qt и общее ядро, затем связывает их с библиотеками Qt. Для этой цели CMake кладёт готовый alphabetical_index_gui.exe прямо в каталог сборки.
+После правок достаточно повторить cmake --build build/gui-vscode. Сборщик перекомпилирует то, что затронули изменения.
+
+В каком порядке читать код:
+
+CMakeLists.txt показывает, из чего собирается цель. Затем читай gui/main.cpp, где создаётся окно и запускается цикл событий Qt. 
+В конструкторе MainWindow вызов setupUi() создаёт элементы из mainwindow.ui, а вызовы connect показывают, какие обработчики срабатывают при действиях пользователя. 
+От обработчика уже можно перейти к нужной функции ядра в sources/AlphabeticalIndex.cpp.
